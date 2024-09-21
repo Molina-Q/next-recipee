@@ -1,0 +1,13 @@
+model Recipe {
+    id      String @id @default(auto()) @map("_id") @db.ObjectId
+    title   String
+    instructions String
+    imageUrl String
+    diff Int
+    time Int
+    vegan Boolean
+    healty Boolean
+    steps String[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
