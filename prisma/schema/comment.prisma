@@ -1,8 +1,8 @@
 model Comment {
-    id      String @id @default(auto()) @map("_id") @db.ObjectId
-    recipeId String
-    // userId String
-    content String
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    recipeId  String
+    userId    String   @db.ObjectId
+    content   String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
