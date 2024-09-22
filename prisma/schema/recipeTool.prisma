@@ -1,0 +1,10 @@
+model RecipeTool {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  recipeId  String   @db.ObjectId
+  toolId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  recipes Recipe @relation(fields: [recipeId], references: [id])
+  tools   Tool   @relation(fields: [toolId], references: [id])
+}
