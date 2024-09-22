@@ -1,0 +1,12 @@
+model RecipeIngredient {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  recipeId     String   @db.ObjectId
+  ingredientId String   @db.ObjectId
+  quantity     Float
+  unit         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  recipes     Recipe     @relation(fields: [recipeId], references: [id])
+  ingredients Ingredient @relation(fields: [ingredientId], references: [id])
+}
