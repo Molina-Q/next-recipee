@@ -1,7 +1,8 @@
 model Ingredient {
-    id      String @id @default(auto()) @map("_id") @db.ObjectId
-    name    String
-    imageUrl String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  imageUrl         String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  RecipeIngredient RecipeIngredient[]
 }
