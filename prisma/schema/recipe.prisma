@@ -12,8 +12,8 @@ model Recipe {
     updatedAt         DateTime           @updatedAt
     userId            String             @db.ObjectId
     categoryId        String             @db.ObjectId
-    Category          Category           @relation(fields: [categoryId], references: [id])
-    Author            User               @relation(fields: [userId], references: [id])
+    Category          Category           @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade) 
+    Author            User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     RecipeTools       RecipeTool[]
     RecipeIngredients RecipeIngredient[]
 }

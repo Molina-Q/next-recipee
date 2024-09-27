@@ -13,3 +13,6 @@ generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch", "fullTextIndex", "prismaSchemaFolder"]
 }
+
+// npx prisma generate
+// npx prisma db push
