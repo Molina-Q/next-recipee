@@ -1,3 +1,4 @@
+import { cloudinary } from '@/lib/cloudinaryConfig';
 import { db } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -10,14 +11,17 @@ export async function POST(
         const tool = await db.tool.create({
             data: {
                 name,
-                imageUrl
+                imageUrl: imageUrl.secure_url
             }
         });
 
         return NextResponse.json([tool]);
 
     } catch (error) {
-        console.log("error create Movie : ", error);
-        return new NextResponse("Internal Server Error", { status: 500 });
+        console.log("error create Tool : ", String(error));
+        return new NextResponse(
+            JSON.stringify({ message: "Internal Server Error", error: error }),
+            { status: 500 }
+        );
     }
 }
