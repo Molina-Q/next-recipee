@@ -1,27 +1,39 @@
 import { Recipe } from "@prisma/client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
-export default function Home() {
-  const { recipees, loading, message } = useFetchRecipes();
-
-  if (loading) {
-    return <div>Loading...</div>;
+async function getRecipes() {
+  'use server';
+  try {
+    const response = await fetch(`/api/recipe`, { cache: 'no-store' });
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.message);
+    }
+    
+    return data.data as Recipe[];
+  } catch (error) {
+    throw new Error(`Failed to fetch recipes: ${error}`);
   }
+}
 
-  if (message) {
-    return <div>{message}</div>;
+export default async function Home() {
+  let recipes: Recipe[] | null = null;
+  let error: string | null = null;
+
+  try {
+    recipes = await getRecipes();
+  } catch (e) {
+    error = e instanceof Error ? e.message : String(e);
   }
 
   return (
     <div>
-      <h1>Recipes Website !</h1>
-      { message && <p>{message}</p> }
-
-      { 
-        recipees && 
+      <h1>Recipes Website!</h1>
+      {error && <p>{error}</p>}
+      {recipes && (
         <ul>
-          {recipees.map((recipe) => (
+          {recipes.map((recipe) => (
             <li key={recipe.id}>
               <Link href={`/recipe/${recipe.id}`}>
                 <p>{recipe.title}</p>
@@ -29,37 +41,7 @@ export default function Home() {
             </li>
           ))}
         </ul>
-      }
-      
+      )}
     </div>
   );
 }
-
-const useFetchRecipes = () => {
-  const [recipees, setRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    async function fetchRecipes() {
-      try {
-        const response = await fetch("/api/recipe");
-        const data = await response.json();
-        
-        if (!data.success) {
-          setMessage(data.message);
-        } else {
-          setRecipes(data.data);
-        }
-      } catch (error) {
-        setMessage(String(error));
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchRecipes();
-  }, []);
-
-  return { recipees, loading, message };
-};
