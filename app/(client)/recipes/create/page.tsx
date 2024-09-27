@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea"
+import { useState } from "react";
 
 interface RecipeForm {
     title: string;
@@ -38,7 +39,20 @@ interface RecipeForm {
     ingredients: string[];
 }
 
+interface Tool {
+    name: string;
+    imageUrl: string;
+}
+
+interface Ingredient {
+    name: string;
+    imageUrl: string;
+}
+
 export default function recipeForm() {
+
+    const [tools, setTools] = useState<Tool[]>([]);
+    const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 
     const formSchema = z.object({
         title: z.string().min(1, {
@@ -70,6 +84,7 @@ export default function recipeForm() {
         }),
     });
 
+    
 
     // 1. Define your form.
     const form = useForm<z.infer<typeof formSchema>>({
@@ -89,18 +104,12 @@ export default function recipeForm() {
         },
     })
 
-    const DynamicStepsForm = () => {
-        const form = useForm({
-            defaultValues: {
-                steps: [''],
-            },
-        });
-    }
-
     const { fields, append } = useFieldArray({
         control: form.control,
         name: 'steps',
     });
+
+
 
     // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof formSchema>) {
