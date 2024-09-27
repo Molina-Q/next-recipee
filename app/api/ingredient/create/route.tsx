@@ -5,12 +5,12 @@ export async function POST(
     req: NextRequest
 ) {
     try {
-        const { name, imageUrl } = await req.json();
+        const { name, image } = await req.json();
 
         const ingredient = await db.ingredient.create({
             data: {
                 name,
-                imageUrl
+                imageUrl: image
             }
         });
 
