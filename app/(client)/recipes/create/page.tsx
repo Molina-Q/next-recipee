@@ -130,6 +130,7 @@ export default function recipeForm() {
             const data = await response.json();
 
             console.log(data);
+
             
         } catch (error) {
             console.log("error create Recipe : ", error);
