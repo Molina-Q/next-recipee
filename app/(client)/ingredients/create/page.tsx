@@ -29,8 +29,6 @@ export default function IngredientForm() {
             });
 
             const data = await response.json();
-            console.log(data);
-
         } catch (error) {
             console.error("Error creating Tool:", error);
         }
@@ -41,10 +39,6 @@ export default function IngredientForm() {
             ...ingredient, 
             image: result.info.secure_url 
         });
-
-        console.log(result.info.secure_url);
-
-        // form.setValue("image", result.secure_url);
     }
 
     async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
