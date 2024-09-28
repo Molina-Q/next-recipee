@@ -23,7 +23,8 @@ import {
 } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea"
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { CldUploadWidget } from "next-cloudinary";
 
 interface RecipeForm {
     title: string;
@@ -51,8 +52,48 @@ interface Ingredient {
 
 export default function recipeForm() {
 
+    const [recipe, setRecipe] = useState<RecipeForm>(
+        {
+            title: "",
+            instructions: "",
+            imageUrl: "",
+            diff: 1,
+            time: 1,
+            vegan: false,
+            healthy: false,
+            steps: [""],
+            categoryId: "",
+            tools: [""],
+            ingredients: [""],
+        }
+    )
     const [tools, setTools] = useState<Tool[]>([]);
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+
+    useEffect(() => {
+        async function fetchTools() {
+            try {
+                const response = await fetch("/api/tool");
+                const data = await response.json();
+                setTools(data.data);
+            } catch (error) {
+                console.error("Error fetching tools:", error);
+            }
+        }
+
+        async function fetchIngredients() {
+            try {
+                const response = await fetch("/api/ingredient");
+                const data = await response.json();
+                setIngredients(data.data);
+            } catch (error) {
+                console.error("Error fetching ingredients:", error);
+            }
+        }
+
+        fetchTools();
+        fetchIngredients();
+    }, []);
 
     const formSchema = z.object({
         title: z.string().min(1, {
@@ -84,7 +125,20 @@ export default function recipeForm() {
         }),
     });
 
-    
+    function handleSuccessUpload(result: any) {
+        setRecipe({
+            ...recipe,
+            imageUrl: result.info.secure_url
+        });
+    }
+
+    function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
+        const { name, value } = e.target;
+        setRecipe({
+            ...recipe,
+            [name]: value,
+        });
+    }
 
     // 1. Define your form.
     const form = useForm<z.infer<typeof formSchema>>({
@@ -112,234 +166,197 @@ export default function recipeForm() {
 
 
     // 2. Define a submit handler.
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
         try {
-            const formData = new FormData();
-            formData.append("title", values.title);
-            formData.append("instructions", values.instructions);
-            formData.append("imageUrl", values.imageUrl);
-            formData.append("diff", values.diff.toString());
-            formData.append("time", values.time.toString());
-            formData.append("vegan", values.vegan.toString());
-            formData.append("healthy", values.healthy.toString());
-            formData.append("steps", values.steps.toString());
-            formData.append("categoryId", values.categoryId);
-            formData.append("tools", values.tools.toString());
-            formData.append("ingredients", values.ingredients.toString());
+            // const formData = new FormData();
+            // formData.append("title", values.title);
+            // formData.append("instructions", values.instructions);
+            // formData.append("imageUrl", values.imageUrl);
+            // formData.append("diff", values.diff.toString());
+            // formData.append("time", values.time.toString());
+            // formData.append("vegan", values.vegan.toString());
+            // formData.append("healthy", values.healthy.toString());
+            // formData.append("steps", values.steps.toString());
+            // formData.append("categoryId", values.categoryId);
+            // formData.append("tools", values.tools.toString());
+            // formData.append("ingredients", values.ingredients.toString());
 
             const response = await fetch("/api/recipe/create", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: formData,
+                body: JSON.stringify(recipe),
             });
 
             const data = await response.json();
 
             console.log(data);
 
-            
+
         } catch (error) {
             console.log("error create Recipe : ", error);
         }
     }
-
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <FormField
-                    control={form.control}
+        <form onSubmit={handleSubmit} className="space-y-8 p-4">
+            <div className="form-group">
+                <label htmlFor="title" className="block text-sm font-medium ">Title</label>
+                <input
+                    id="title"
                     name="title"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Title</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Banana bread..." {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
+                    type="text"
+                    placeholder="Banana bread..."
+                    onChange={handleChange}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
-                <FormField
-                    control={form.control}
+            </div>
+
+            <div className="form-group">
+                <label htmlFor="instructions" className="block text-sm font-medium ">Instructions</label>
+                <textarea
+                    id="instructions"
                     name="instructions"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Instructions</FormLabel>
-                            <FormControl>
-                                <Textarea placeholder="Step-by-step instructions..." {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
+                    placeholder="Step-by-step instructions..."
+                    onChange={handleChange}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
-                <FormField
-                    control={form.control}
-                    name="imageUrl"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Image URL</FormLabel>
-                            <FormControl>
-                                <Input type="file" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
+            </div>
+
+            <div className="form-group">
+                <CldUploadWidget
+                    uploadPreset="next_upload_preset"
+                    onSuccess={handleSuccessUpload}
+                >
+                    {({ open }) => {
+                        return (
+                            <button type="button" onClick={() => open()}>
+                                Upload an Image
+                            </button>
+                        );
+                    }}
+                </CldUploadWidget>
+            </div>
+
+            <div className="form-group">
+                <label htmlFor="diff" className="block text-sm font-medium ">Difficulty /10</label>
+                <input
+                    id="diff"
                     name="diff"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Difficulty /10</FormLabel>
-                            <FormControl>
-                                <Input type="number" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
+                    type="number"
+                    onChange={handleChange}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
-                <FormField
-                    control={form.control}
+            </div>
+
+            <div className="form-group">
+                <label htmlFor="time" className="block text-sm font-medium ">Time (minutes)</label>
+                <input
+                    id="time"
                     name="time"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Time (minutes)</FormLabel>
-                            <FormControl>
-                                <Input type="number" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
+                    type="number"
+                    onChange={handleChange}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
-                <FormField
-                    control={form.control}
+            </div>
+
+            <div className="form-group flex items-center space-x-2">
+                <input
+                    id="vegan"
                     name="vegan"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormControl>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                    />
-                                    <FormLabel>Vegan</FormLabel>
-                                </div>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
+                    type="checkbox"
+                    onChange={handleChange}
+                    className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                 />
-                <FormField
-                    control={form.control}
+                <label htmlFor="vegan" className="block text-sm font-medium ">Vegan</label>
+            </div>
+
+            <div className="form-group flex items-center space-x-2">
+                <input
+                    id="healthy"
                     name="healthy"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormControl>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                    />
-                                    <FormLabel>Healthy</FormLabel>
-                                </div>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
+                    type="checkbox"
+                    onChange={handleChange}
+                    className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                 />
-                <FormField
-                    control={form.control}
-                    name="steps"
-                    render={() => (
-                        <FormItem>
-                            <FormLabel>Steps</FormLabel>
-                            <FormControl>
-                                <div className="space-y-2">
-                                    {fields.map((field, index) => (
-                                        <FormField
-                                            key={field.id}
-                                            control={form.control}
-                                            name={`steps.${index}`}
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormControl>
-                                                        <Textarea
-                                                            placeholder={`Step ${index + 1}`}
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                </FormItem>
-                                            )}
-                                        />
-                                    ))}
-                                </div>
-                            </FormControl>
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                className="mt-2"
-                                onClick={() => append('')}
-                            >
-                                Add Step
-                            </Button>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
+                <label htmlFor="healthy" className="block text-sm font-medium ">Healthy</label>
+            </div>
+
+            <div className="form-group">
+                <label htmlFor="steps" className="block text-sm font-medium ">Steps</label>
+                <div className="space-y-2">
+                    {fields.map((field, index) => (
+                        <div key={field.id} className="flex items-center space-x-2">
+                            <textarea
+                                id={`steps.${index}`}
+                                name={`steps.${index}`}
+                                placeholder={`Step ${index + 1}`}
+                                onChange={handleChange}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            />
+                        </div>
+                    ))}
+                </div>
+                <button
+                    type="button"
+                    onClick={() => append('')}
+                    className="mt-2 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                    Add Step
+                </button>
+            </div>
+
+            <div className="form-group">
+                <label htmlFor="categoryId" className="block text-sm font-medium ">Category ID</label>
+                <input
+                    id="categoryId"
                     name="categoryId"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Category ID</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Category ID..." {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
+                    type="text"
+                    placeholder="Category ID..."
+                    onChange={handleChange}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
-                <FormField
-                    control={form.control}
-                    name="tools"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Tools</FormLabel>
-                            <FormControl>
-                                <Textarea placeholder="Tool 1, Tool 2, ..." {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
+            </div>
+
+            <div className="form-group">
+                <label htmlFor="tools" className="block text-sm font-medium ">Tools</label>
+                <select 
+                    name="tools" 
+                    id="tools"
+                    onChange={handleChange}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                >
+
+                    {tools &&
+                        tools.map((ingredient) => (
+                            <option key={ingredient.name} value={ingredient.name}>{ingredient.name}</option>
+                        ))
+                    }
+                </select>
+            </div>
+
+            <div className="form-group">
+                <label htmlFor="ingredients" className="block text-sm font-medium ">Ingredients</label>
+                <select
+                    id="ingredients"
                     name="ingredients"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Ingredients</FormLabel>
-                            <FormControl>
-                                <Select>
-                                    <SelectTrigger className="w-[180px]">
-                                        <SelectValue placeholder="Theme" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="light">Light</SelectItem>
-                                        <SelectItem value="dark">Dark</SelectItem>
-                                        <SelectItem value="system">System</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <Button className="bg-slate-950 text-white" type="submit">Submit</Button>
-            </form>
-        </Form>
+                    onChange={handleChange}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                >
+                    {ingredients &&
+                        ingredients.map((ingredient) => (
+                            <option key={ingredient.name} value={ingredient.name}>
+                                {ingredient.name}
+                            </option>
+                        ))
+                    }
+                </select>
+            </div>
+
+            <button
+                type="submit"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+                Submit
+            </button>
+        </form>
     );
-}
+};
