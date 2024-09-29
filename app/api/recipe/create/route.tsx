@@ -12,8 +12,8 @@ export async function POST(
                 title,
                 instructions,
                 imageUrl,
-                diff,
-                time,
+                diff: Number(diff),
+                time: Number(time),
                 vegan,
                 healthy,
                 steps,
@@ -50,7 +50,7 @@ export async function POST(
             })
         }
 
-        return NextResponse.json([recipe]);
+        return NextResponse.json([recipe, recipeIngredients, recipeTools], { status: 201 });
 
     } catch (error) {
         console.log("error create Movie : ", error);
