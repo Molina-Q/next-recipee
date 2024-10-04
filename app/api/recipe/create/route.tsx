@@ -5,7 +5,7 @@ export async function POST(
     req: NextRequest
 ) {
     try {
-        const { quantity, unit, tools, ingredients, title, instructions, imageUrl, diff, time, vegan, healthy, steps, categoryId } = await req.json();
+        const { tools, ingredients, title, instructions, imageUrl, diff, time, vegan, healthy, steps, categoryId } = await req.json();
 
         const recipe = await db.recipe.create({
             data: {
@@ -18,7 +18,7 @@ export async function POST(
                 healthy,
                 steps,
                 categoryId,
-                userId: "a1",
+                userId: "66ffa12e0714553176ae2485",
             }
         });
 
@@ -37,20 +37,20 @@ export async function POST(
 
         const recipeIngredients: unknown[] = [];
         {
-            ingredients.map(async (ingredient: string) => {
+            ingredients.map(async (ingredient: any) => {
                 const recipeIngredient = await db.recipeIngredient.create({
                     data: {
                         recipeId: recipe.id,
-                        ingredientId: ingredient,
-                        quantity: quantity,
-                        unit: unit,
+                        ingredientId: ingredient.id,
+                        quantity: ingredient.quantity,
+                        unit: ingredient.unit,
                     }
                 });
                 recipeIngredients.push(recipeIngredient);
             })
         }
 
-        return NextResponse.json([recipe, recipeIngredients, recipeTools], { status: 201 });
+        return NextResponse.json({recipe, recipeIngredients, recipeTools}, { status: 201 });
 
     } catch (error) {
         console.log("error create Movie : ", error);
