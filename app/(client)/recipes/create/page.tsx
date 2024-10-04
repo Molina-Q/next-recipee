@@ -1,28 +1,5 @@
 "use client"
-import Image from "next/image";
 import { z } from "zod"
-import { Button } from "@/components/ui/button"
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input";
-import { useFieldArray, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox";
-import { Textarea } from "@/components/ui/textarea"
 import { useEffect, useState } from "react";
 import { CldUploadWidget } from "next-cloudinary";
 
@@ -37,17 +14,30 @@ interface RecipeForm {
     steps: string[];
     categoryId: string;
     tools: string[];
-    ingredients: string[];
+    ingredients: IngredientFormData[];
 }
 
 interface Tool {
+    id: string;
     name: string;
     imageUrl: string;
 }
 
 interface Ingredient {
+    id: string;
     name: string;
     imageUrl: string;
+}
+
+interface IngredientFormData {
+    id: string;
+    quantity: number;
+    unit: string;
+}
+
+interface Category {
+    id: string;
+    name: string;
 }
 
 export default function recipeForm() {
@@ -64,36 +54,11 @@ export default function recipeForm() {
             steps: [""],
             categoryId: "",
             tools: [""],
-            ingredients: [""],
+            ingredients: [] as IngredientFormData[],
         }
     )
-    const [tools, setTools] = useState<Tool[]>([]);
-    const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 
-    useEffect(() => {
-        async function fetchTools() {
-            try {
-                const response = await fetch("/api/tool");
-                const data = await response.json();
-                setTools(data.data);
-            } catch (error) {
-                console.error("Error fetching tools:", error);
-            }
-        }
-
-        async function fetchIngredients() {
-            try {
-                const response = await fetch("/api/ingredient");
-                const data = await response.json();
-                setIngredients(data.data);
-            } catch (error) {
-                console.error("Error fetching ingredients:", error);
-            }
-        }
-
-        fetchTools();
-        fetchIngredients();
-    }, []);
+    const { ingredients, tools, categories } = useFetchData();
 
     const formSchema = z.object({
         title: z.string().min(1, {
@@ -140,57 +105,81 @@ export default function recipeForm() {
         });
     }
 
-    // 1. Define your form.
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            title: "",
-            instructions: "",
-            imageUrl: "",
-            diff: 1,
-            time: 1,
-            vegan: false,
-            healthy: false,
-            categoryId: "",
-            steps: [""],
-            tools: [""],
-            ingredients: [""],
-        },
-    })
+    function handleIngredients(e: React.ChangeEvent<HTMLInputElement>) {
+        const { name, value, id, checked } = e.target;
+        const ingredients = recipe.ingredients as IngredientFormData[];
+        const ingredient = ingredients.find((ingredient) => ingredient.id === id);
 
-    const { fields, append } = useFieldArray({
-        control: form.control,
-        name: 'steps',
-    });
+        if (name === 'ingredients' && checked === false) {
+            const index = ingredients.findIndex((ingredient) => ingredient.id === id);
+            ingredients.splice(index, 1);
+        }
 
+        if (ingredient) {
+            if (name === 'quantity') {
+                ingredient[name] = parseFloat(value);
+            } else if (name === 'unit') {
+                ingredient[name] = value;
+            }
+        } else if (name === 'ingredients' && checked === true) {
+            ingredients.push({ id, quantity: 0, unit: "" });
+        }
 
+        setRecipe({
+            ...recipe,
+            ingredients: removeEmptyIndices(ingredients)
+        });
+    }
+
+    function handleTools(e: React.ChangeEvent<HTMLInputElement>) {
+        const { id } = e.target;
+        const tools = recipe.tools;
+
+        if (tools.includes(id)) {
+            const index = tools.indexOf(id);
+            tools.splice(index, 1);
+        } else {
+            tools.push(id);
+        }
+
+        setRecipe({
+            ...recipe,
+            tools: removeEmptyIndices(tools)
+        });
+    }
+
+    function handleCheckboxChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const { name, checked } = e.target;
+
+        setRecipe({
+            ...recipe,
+            [name]: checked
+        });
+    }
+
+    const handleStepsInputChange = (index: number, event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const { name, value } = event.target;
+        const newDetails = [...recipe.steps];
+        newDetails[index] = value;
+        setRecipe({ ...recipe, steps: newDetails });
+    };
+
+    const addStep = () => {
+        setRecipe({ ...recipe, steps: [...recipe.steps, ''] });
+    };
+
+    console.log("recipe : ", recipe);
 
     // 2. Define a submit handler.
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         try {
-            // const formData = new FormData();
-            // formData.append("title", values.title);
-            // formData.append("instructions", values.instructions);
-            // formData.append("imageUrl", values.imageUrl);
-            // formData.append("diff", values.diff.toString());
-            // formData.append("time", values.time.toString());
-            // formData.append("vegan", values.vegan.toString());
-            // formData.append("healthy", values.healthy.toString());
-            // formData.append("steps", values.steps.toString());
-            // formData.append("categoryId", values.categoryId);
-            // formData.append("tools", values.tools.toString());
-            // formData.append("ingredients", values.ingredients.toString());
-
             const response = await fetch("/api/recipe/create", {
                 method: "POST",
                 body: JSON.stringify(recipe),
             });
 
             const data = await response.json();
-
-            console.log(data);
-
 
         } catch (error) {
             console.log("error create Recipe : ", error);
@@ -263,7 +252,7 @@ export default function recipeForm() {
                     id="vegan"
                     name="vegan"
                     type="checkbox"
-                    onChange={handleChange}
+                    onChange={handleCheckboxChange}
                     className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                 />
                 <label htmlFor="vegan" className="block text-sm font-medium ">Vegan</label>
@@ -274,22 +263,22 @@ export default function recipeForm() {
                     id="healthy"
                     name="healthy"
                     type="checkbox"
-                    onChange={handleChange}
+                    onChange={handleCheckboxChange}
                     className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                 />
                 <label htmlFor="healthy" className="block text-sm font-medium ">Healthy</label>
             </div>
 
             <div className="form-group">
-                <label htmlFor="steps" className="block text-sm font-medium ">Steps</label>
                 <div className="space-y-2">
-                    {fields.map((field, index) => (
-                        <div key={field.id} className="flex items-center space-x-2">
+                    {recipe.steps.map((step, index) => (
+                        <div key={index} className="flex flex-col space-x-2">
+                            <label htmlFor="steps">Steps {index + 1}</label>
                             <textarea
-                                id={`steps.${index}`}
-                                name={`steps.${index}`}
-                                placeholder={`Step ${index + 1}`}
-                                onChange={handleChange}
+                                id={'steps'}
+                                name={"steps"}
+                                value={step}
+                                onChange={(event) => handleStepsInputChange(index, event)}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             />
                         </div>
@@ -297,7 +286,7 @@ export default function recipeForm() {
                 </div>
                 <button
                     type="button"
-                    onClick={() => append('')}
+                    onClick={addStep}
                     className="mt-2 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                     Add Step
@@ -306,49 +295,81 @@ export default function recipeForm() {
 
             <div className="form-group">
                 <label htmlFor="categoryId" className="block text-sm font-medium ">Category ID</label>
-                <input
-                    id="categoryId"
-                    name="categoryId"
-                    type="text"
-                    placeholder="Category ID..."
-                    onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
-            </div>
-
-            <div className="form-group">
-                <label htmlFor="tools" className="block text-sm font-medium ">Tools</label>
-                <select 
-                    name="tools" 
-                    id="tools"
-                    onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                >
-
-                    {tools &&
-                        tools.map((ingredient) => (
-                            <option key={ingredient.name} value={ingredient.name}>{ingredient.name}</option>
-                        ))
-                    }
-                </select>
-            </div>
-
-            <div className="form-group">
-                <label htmlFor="ingredients" className="block text-sm font-medium ">Ingredients</label>
                 <select
-                    id="ingredients"
-                    name="ingredients"
+                    name="categoryId"
+                    id="categoryId"
                     onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    value={recipe.categoryId}
                 >
-                    {ingredients &&
-                        ingredients.map((ingredient) => (
-                            <option key={ingredient.name} value={ingredient.name}>
-                                {ingredient.name}
-                            </option>
-                        ))
-                    }
+                    <option value="">Select a category...</option>
+                    {categories && categories.map((category) => (
+                        <option key={category.id} value={category.id}>{category.name}</option>
+                    ))}
                 </select>
+            </div>
+
+            <div className="form-group">
+                <label htmlFor="tools" className="block text-sm font-medium">Tools</label>
+                <div className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    {tools && tools.map((tool) => (
+                        <div key={tool.name} className="flex items-center space-x-2">
+                            <input
+                                type="checkbox"
+                                id={tool.id}
+                                name="tools"
+                                value={tool.name}
+                                onChange={handleTools}
+                                className="h-4 w-4 border-gray-300 rounded focus:ring-indigo-500"
+                            />
+                            <label htmlFor={`tool-${tool.name}`} className="block text-sm font-medium">
+                                {tool.name}
+                            </label>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+
+            <div className="form-group">
+                <label htmlFor="ingredients" className="block text-sm font-medium">Ingredients</label>
+                <div className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    {ingredients && ingredients.map((ingredient) => (
+                        <div key={ingredient.name} className="flex items-center space-x-2">
+                            <input
+                                type="checkbox"
+                                id={ingredient.id}
+                                name="ingredients"
+                                value={ingredient.name}
+                                onChange={handleIngredients}
+                                className="h-4 w-4 border-gray-300 rounded focus:ring-indigo-500"
+                            />
+
+                            <label htmlFor={ingredient.name} className="block text-sm font-medium ">
+                                {ingredient.name}
+                            </label>
+
+                            <div>
+                                <input
+                                    type="number"
+                                    id={ingredient.id}
+                                    name="quantity"
+                                    placeholder="Quantity"
+                                    onChange={handleIngredients}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+
+                                <input
+                                    type="text"
+                                    id={ingredient.id}
+                                    name="unit"
+                                    placeholder="Unit"
+                                    onChange={handleIngredients}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             <button
@@ -360,3 +381,40 @@ export default function recipeForm() {
         </form>
     );
 };
+
+function removeEmptyIndices(arr: any[]) {
+    return arr.filter(element => element !== null && element !== undefined && element !== '');
+}
+
+function useFetchData() {
+    interface Data {
+        categories: Category[];
+        tools: Tool[];
+        ingredients: Ingredient[];
+    }
+
+    const [metadata, setMetadata] = useState<Data>({
+        categories: [],
+        tools: [],
+        ingredients: []
+    });
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const response = await fetch("/api/recipe/metadata", {
+                    method: "GET",
+                });
+                const data = await response.json();
+                setMetadata(data);
+                console.log("data : ", data);
+            } catch (error) {
+                console.error("Error fetching tools:", error);
+            }
+        }
+
+        fetchData();
+    }, []);
+
+    return { tools: metadata.tools, ingredients: metadata.ingredients, categories: metadata.categories };
+}
