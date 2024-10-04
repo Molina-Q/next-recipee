@@ -18,7 +18,6 @@ export default function ToolForm() {
         name: "",
         image: '',
     });
-    console.log(tool);
     
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -41,10 +40,6 @@ export default function ToolForm() {
             ...tool, 
             image: result.info.secure_url 
         });
-
-        console.log(result.info.secure_url);
-
-        // form.setValue("image", result.secure_url);
     }
 
     async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
