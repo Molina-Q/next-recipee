@@ -5,13 +5,13 @@ export async function GET(
     req: NextRequest
 ) {
     try {
-        const recipe = await db.recipe.findMany();
+        const recipes = await db.recipe.findMany();
 
-        if (!recipe || recipe.length === 0) {
+        if (!recipes || recipes.length === 0) {
             return NextResponse.json({ message: "Recipe not found", success: false }, { status: 404 });
         }
         
-        return NextResponse.json({ data: recipe, message: "Recipe found", success: true}, { status: 200 });
+        return NextResponse.json({ data: recipes, message: "Recipe found", success: true}, { status: 200 });
 
     } catch (error) {
         console.log("error create Movie : ", error);
