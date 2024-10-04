@@ -1,16 +1,17 @@
 import { Recipe } from "@prisma/client";
 import Link from "next/link";
+import SingleRecipeCard from "./_component/SingleRecipeCard";
 
 async function getRecipes() {
   'use server';
   try {
-    const response = await fetch(`/api/recipe`, { cache: 'no-store' });
+    const response = await fetch("http://localhost:3000/api/recipe", { method: 'GET' });
     const data = await response.json();
-    
+
     if (!data.success) {
       throw new Error(data.message);
     }
-    
+
     return data.data as Recipe[];
   } catch (error) {
     throw new Error(`Failed to fetch recipes: ${error}`);
@@ -34,11 +35,11 @@ export default async function Home() {
       {recipes && (
         <ul>
           {recipes.map((recipe) => (
-            <li key={recipe.id}>
-              <Link href={`/recipe/${recipe.id}`}>
-                <p>{recipe.title}</p>
-              </Link>
-            </li>
+            <div key={recipe.id}>
+              {/* <Link href={`/recipe/${recipe.id}`}> */}
+                <SingleRecipeCard recipe={recipe} key={recipe.id} />
+              {/* </Link> */}
+            </div>
           ))}
         </ul>
       )}
