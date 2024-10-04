@@ -3,6 +3,8 @@ import { Recipe } from '@prisma/client';
 import Image from 'next/image';
 import React from 'react'
 import { Heart, Sprout } from 'lucide-react';
+import iconFromDifficulty from '../utils/iconFromDifficulty';
+import Link from 'next/link';
 
 type SingleRecipeCardProps = {
     recipe: Recipe;
@@ -10,35 +12,39 @@ type SingleRecipeCardProps = {
 
 const SingleRecipeCard: React.FC<SingleRecipeCardProps> = ({ recipe }) => {
     return (
-        <Card className='w-fit'>
+        <Card className='w-fit h-[520px]'>
             <CardHeader>
                 <Image
                     src={recipe.imageUrl}
                     alt={recipe.title}
                     width={300}
                     height={300}
-                    className='rounded-lg'
+                    className='size-[300px] rounded-lg object-cover'
                 />
 
-                <CardDescription>
-                    {recipe.diff}
+                <CardDescription className='flex flex-row' title={`Difficulty: ${recipe.diff}/5`}>
+                    {[...Array(recipe.diff)].map((_, index) => (
+                        <span key={index}>
+                            {iconFromDifficulty(String(recipe.diff))}
+                        </span>
+                    ))}
                 </CardDescription>
+                
                 <CardDescription>
                     {recipe.time} min
                 </CardDescription>
             </CardHeader>
 
             <CardContent>
-                {recipe.title}
+                <Link href={`/recipes/${recipe.id}`}>{recipe.title}</Link>
                 <CardDescription>
                     {recipe.instructions}
                 </CardDescription>
             </CardContent>
 
-
             <CardFooter>
-                {recipe.vegan && <Sprout size={28} color="#80ff00" strokeWidth={1.25} />}
-                {recipe.healthy && <Heart size={28} color="#00ff00" strokeWidth={1.25} />}
+                {recipe.vegan && <span title="Vegan"><Sprout size={28} color="#80ff00" strokeWidth={1.25} /></span>}
+                {recipe.healthy && <span title="Healthy"><Heart size={24} color="#00ff00" strokeWidth={1.25} /></span>}
             </CardFooter>
         </Card>
     )
