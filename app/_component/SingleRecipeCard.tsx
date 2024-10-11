@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Recipe } from '@prisma/client';
 import Image from 'next/image';
 import React from 'react'
@@ -12,8 +12,13 @@ type SingleRecipeCardProps = {
 
 const SingleRecipeCard: React.FC<SingleRecipeCardProps> = ({ recipe }) => {
     return (
-        <Card className='w-fit h-[520px]'>
+        <Card className='w-fit h-[530px] hover:bg-slate-900'>
+
             <CardHeader>
+                <CardTitle className='text-center mb-3'>
+                    <Link href={`/recipes/${recipe.id}`} className='hover:text-blue-400'>{recipe.title}</Link>
+                </CardTitle>
+
                 <Image
                     src={recipe.imageUrl}
                     alt={recipe.title}
@@ -29,14 +34,13 @@ const SingleRecipeCard: React.FC<SingleRecipeCardProps> = ({ recipe }) => {
                         </span>
                     ))}
                 </CardDescription>
-                
+
                 <CardDescription>
                     {recipe.time} min
                 </CardDescription>
             </CardHeader>
 
             <CardContent>
-                <Link href={`/recipes/${recipe.id}`}>{recipe.title}</Link>
                 <CardDescription>
                     {recipe.instructions}
                 </CardDescription>
