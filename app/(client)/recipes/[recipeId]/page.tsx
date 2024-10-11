@@ -1,12 +1,11 @@
 import { RecipeType } from '@/app/types/interface';
-import { CookingPot, Wheat } from 'lucide-react';
-// import Slider from '@/components/swiper/slider';
+import { CookingPot, List, NotepadText, Wheat } from 'lucide-react';
 import { GetServerSidePropsContext, Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import React from 'react'
-const Slider = dynamic(() => import('@/components/swiper/slider'), { ssr: false });
+import Slider from '@/components/swiper/slider';
 
 async function getRecipe(context: GetServerSidePropsContext) {
     'use server';
@@ -43,18 +42,19 @@ async function DetailsRecipe(context: GetServerSidePropsContext) {
     } catch (e) {
         error = e instanceof Error ? e.message : String(e);
     }
-    if (recipe) {
-        console.log(recipe);
+
+    if (!recipe) {
+        // console.log(recipe);
     }
 
     return (
         <>
             {recipe && (
-                <div className='flex flex-col justify-center'>
+                <div className='flex flex-col justify-center gap-2 mb-5'>
 
-                    <h1 className='text-5xl'>{recipe.title}</h1>
+                    <h1 className='text-5xl text-center'>{recipe.title}</h1>
 
-                    <section>
+                    <section className='mx-auto'>
                         <Image
                             src={recipe.imageUrl}
                             height={300}
@@ -62,10 +62,13 @@ async function DetailsRecipe(context: GetServerSidePropsContext) {
                             alt={recipe.title}
                             className='rounded-md'
                         />
-                        <p>{recipe.instructions}</p>
                     </section>
 
-                    <section>
+                    <section className='my-3'>
+                        <span className='mb-3 text-2xl flex flex-row items-center gap-3'>
+                            <List />
+                            <h2>Steps</h2>
+                        </span>
                         <Slider steps={recipe.steps} />
                     </section>
 
@@ -111,6 +114,16 @@ async function DetailsRecipe(context: GetServerSidePropsContext) {
                                     <p>{recipeTool.tool.name}</p>
                                 </div>
                             ))}
+                        </div>
+                    </section>
+
+                    <section>
+                        <span className='mb-3 text-2xl flex flex-row items-center gap-3'>
+                            <NotepadText />
+                            <h2>Instruction</h2>
+                        </span>
+                        <div className='bg-slate-700 rounded-sm px-5 py-2'>
+                            <p>{recipe.instructions}</p>
                         </div>
                     </section>
 
