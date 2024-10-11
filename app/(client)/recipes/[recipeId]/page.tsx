@@ -49,9 +49,6 @@ async function DetailsRecipe(context: GetServerSidePropsContext) {
         // console.log(recipe);
     }
 
-    const tabs = ['Ingredients', 'Tools'];
-    const panels = recipe;
-
     return (
         <>
             {recipe && (
@@ -88,7 +85,7 @@ async function DetailsRecipe(context: GetServerSidePropsContext) {
                     </section>
 
                     <section>   
-                        <Tabs tabs={tabs} panels={recipe} />
+                        <Tabs tabs={['Ingredients', 'Tools']} panels={recipe} />
                     </section>
                 </div>
             )}
