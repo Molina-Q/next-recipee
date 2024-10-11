@@ -15,16 +15,22 @@ type Props = {
 const Slider: React.FC<Props> = ({ steps }) => {
     return (
         <Swiper
-            className='h-28'
+            className='h-32 w-full md:w-[80vw]'
             modules={[Navigation, Pagination, Scrollbar, A11y, Mousewheel]}
-            spaceBetween={50}
-            slidesPerView={3}
+            spaceBetween={30}
+            slidesPerView={1}
             onSlideChange={() => console.log('slide change')}
             onSwiper={(swiper) => console.log(swiper)}
             pagination={{ clickable: true }}
-            autoplay={{ delay: 1000 }}
-            centeredSlides
             navigation
+            a11y={{
+                enabled: true,
+                prevSlideMessage: 'Previous slide',
+                nextSlideMessage: 'Next slide',
+                firstSlideMessage: 'This is the first slide',
+                lastSlideMessage: 'This is the last slide',
+                paginationBulletMessage: 'Go to slide {{index}}',
+            }}
             mousewheel
             loop
         >
