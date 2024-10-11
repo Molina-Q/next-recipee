@@ -17,8 +17,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, panels }) => {
                     <Tab
                         key={index}
                         className={`
-                        text-2xl 
-                        px-2 py-1 
+                        text-2xl px-2 py-1 
                         outline-none
                         data-[selected]:bg-slate-700 
                         ${index === 0 && "data-[selected]:rounded-tl-lg"} 
@@ -30,7 +29,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, panels }) => {
                 ))}
             </TabList>
 
-            <TabPanels className={"border-slate-600 border-2 rounded-b-lg"}>
+            <TabPanels className={"border-slate-700 border-[1px] rounded-b-lg"}>
                 {panels.RecipeIngredients.map((recipeIngredient) => (
                     <TabPanel key={recipeIngredient.id}>
                         <div className='my-3 py-3 flex flex-row gap-5 p-3'>
