@@ -1,8 +1,12 @@
 import { RecipeType } from '@/app/types/interface';
+import { CookingPot, Wheat } from 'lucide-react';
+// import Slider from '@/components/swiper/slider';
 import { GetServerSidePropsContext, Metadata } from 'next';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import React from 'react'
+const Slider = dynamic(() => import('@/components/swiper/slider'), { ssr: false });
 
 async function getRecipe(context: GetServerSidePropsContext) {
     'use server';
@@ -44,60 +48,75 @@ async function DetailsRecipe(context: GetServerSidePropsContext) {
     }
 
     return (
-        <div>
+        <>
             {recipe && (
-                <>
-                    <Image
-                        src={recipe.imageUrl}
-                        height={300}
-                        width={300}
-                        alt={recipe.title}
-                    />
-                    <p>{recipe.title}</p>
-                    <p>{recipe.instructions}</p>
+                <div className='flex flex-col justify-center'>
 
-                    <div className='flex flex-row flex-wrap gap-2'>
-                        {recipe.steps.map((step, index) => (
-                            <div key={index} className='border border-white flex-1'>
-                                <p className='text-center'>{index + 1}. {step}</p>
-                            </div>
-                        ))}
-                    </div>
+                    <h1 className='text-5xl'>{recipe.title}</h1>
 
-                    <div className='border border-white my-3 py-3'>
-                        <h2>Ingredients</h2>
-                        {recipe.RecipeIngredients.map((recipeIngredient) => (
-                            <div key={recipeIngredient.id} className='flex flex-row items-center'>
-                                <Image
-                                    src={recipeIngredient.ingredient.imageUrl}
-                                    height={50}
-                                    width={50}
-                                    alt={recipeIngredient.ingredient.name}
-                                />
-                                <p>
-                                    {recipeIngredient.ingredient.name} - {recipeIngredient.quantity} {recipeIngredient.unit}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
+                    <section>
+                        <Image
+                            src={recipe.imageUrl}
+                            height={300}
+                            width={300}
+                            alt={recipe.title}
+                            className='rounded-md'
+                        />
+                        <p>{recipe.instructions}</p>
+                    </section>
 
-                    <div className='border border-white my-3 py-3'>
-                        <h2>Tools</h2>
-                        {recipe.RecipeTools.map((recipeTool) => (
-                            <div key={recipeTool.id} className="flex flex-row items-center">
-                                <Image
-                                    src={recipeTool.tool.imageUrl}
-                                    height={50}
-                                    width={50}
-                                    alt={recipeTool.tool.name}
-                                />
-                                <p>1x {recipeTool.tool.name}</p>
-                            </div>
-                        ))}
-                    </div>
-                </>
+                    <section>
+                        <Slider steps={recipe.steps} />
+                    </section>
+
+                    <section>
+                        <span className='text-2xl flex flex-row items-center gap-3'>
+                            <Wheat />
+                            <h2>Ingredients</h2>
+                        </span>
+                        <div className='my-3 py-3 flex flex-row gap-5 p-3'>
+                            {recipe.RecipeIngredients.map((recipeIngredient) => (
+                                <div key={recipeIngredient.id} className='flex flex-col items-center'>
+                                    <Image
+                                        src={recipeIngredient.ingredient.imageUrl}
+                                        height={100}
+                                        width={100}
+                                        alt={recipeIngredient.ingredient.name}
+                                        className='size-[100px] rounded-md object-fill'
+                                    />
+                                    <p>
+                                        {recipeIngredient.ingredient.name}
+                                    </p>
+                                    <p>{recipeIngredient.quantity} {recipeIngredient.unit}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    <section>
+                        <span className='text-2xl flex flex-row items-center gap-3'>
+                            <CookingPot />
+                            <h2>Tools</h2>
+                        </span>
+                        <div className='my-3 py-3 flex flex-row gap-5 p-3'>
+                            {recipe.RecipeTools.map((recipeTool) => (
+                                <div key={recipeTool.id} className="flex flex-col items-center">
+                                    <Image
+                                        src={recipeTool.tool.imageUrl}
+                                        height={100}
+                                        width={100}
+                                        alt={recipeTool.tool.name}
+                                        className='size-[100px] rounded-md object-fill'
+                                    />
+                                    <p>{recipeTool.tool.name}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                </div>
             )}
-        </div>
+        </>
     )
 }
 
