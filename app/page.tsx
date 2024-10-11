@@ -32,17 +32,16 @@ export default async function Home() {
 
   return (
     <div>
-      <h1>Recipe Website</h1>
       {error && <p>{error}</p>}
+
       {recipes && (
         <div className="flex flex-row gap-2">
           {recipes.map((recipe) => (
-            <div key={recipe.id}>
               <SingleRecipeCard recipe={recipe} key={recipe.id} />
-            </div>
           ))}
         </div>
       )}
+
     </div>
   );
 }
