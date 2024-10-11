@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import React from 'react'
 import Slider from '@/components/swiper/slider';
+import Tabs from './_component/Tabs';
 
 async function getRecipe(context: GetServerSidePropsContext) {
     'use server';
@@ -37,6 +38,7 @@ async function DetailsRecipe(context: GetServerSidePropsContext) {
     let recipe: RecipeType | null = null;
     let error: string | null = null;
 
+
     try {
         recipe = await getRecipe(context);
     } catch (e) {
@@ -46,6 +48,9 @@ async function DetailsRecipe(context: GetServerSidePropsContext) {
     if (!recipe) {
         // console.log(recipe);
     }
+
+    const tabs = ['Ingredients', 'Tools'];
+    const panels = recipe;
 
     return (
         <>
@@ -64,59 +69,6 @@ async function DetailsRecipe(context: GetServerSidePropsContext) {
                         />
                     </section>
 
-                    <section className='my-3'>
-                        <span className='mb-3 text-2xl flex flex-row items-center gap-3'>
-                            <List />
-                            <h2>Steps</h2>
-                        </span>
-                        <Slider steps={recipe.steps} />
-                    </section>
-
-                    <section>
-                        <span className='text-2xl flex flex-row items-center gap-3'>
-                            <Wheat />
-                            <h2>Ingredients</h2>
-                        </span>
-                        <div className='my-3 py-3 flex flex-row gap-5 p-3'>
-                            {recipe.RecipeIngredients.map((recipeIngredient) => (
-                                <div key={recipeIngredient.id} className='flex flex-col items-center'>
-                                    <Image
-                                        src={recipeIngredient.ingredient.imageUrl}
-                                        height={100}
-                                        width={100}
-                                        alt={recipeIngredient.ingredient.name}
-                                        className='size-[100px] rounded-md object-fill'
-                                    />
-                                    <p>
-                                        {recipeIngredient.ingredient.name}
-                                    </p>
-                                    <p>{recipeIngredient.quantity} {recipeIngredient.unit}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-
-                    <section>
-                        <span className='text-2xl flex flex-row items-center gap-3'>
-                            <CookingPot />
-                            <h2>Tools</h2>
-                        </span>
-                        <div className='my-3 py-3 flex flex-row gap-5 p-3'>
-                            {recipe.RecipeTools.map((recipeTool) => (
-                                <div key={recipeTool.id} className="flex flex-col items-center">
-                                    <Image
-                                        src={recipeTool.tool.imageUrl}
-                                        height={100}
-                                        width={100}
-                                        alt={recipeTool.tool.name}
-                                        className='size-[100px] rounded-md object-fill'
-                                    />
-                                    <p>{recipeTool.tool.name}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-
                     <section>
                         <span className='mb-3 text-2xl flex flex-row items-center gap-3'>
                             <NotepadText />
@@ -127,6 +79,17 @@ async function DetailsRecipe(context: GetServerSidePropsContext) {
                         </div>
                     </section>
 
+                    <section className='my-3'>
+                        <span className='mb-3 text-2xl flex flex-row items-center gap-3'>
+                            <List />
+                            <h2>Steps</h2>
+                        </span>
+                        <Slider steps={recipe.steps} />
+                    </section>
+
+                    <section>   
+                        <Tabs tabs={tabs} panels={recipe} />
+                    </section>
                 </div>
             )}
         </>
