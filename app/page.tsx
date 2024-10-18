@@ -1,7 +1,7 @@
-import { Recipe } from "@prisma/client";
 import Link from "next/link";
 import SingleRecipeCard from "./_component/SingleRecipeCard";
- 
+import { Recipe } from "@/lib/types";
+
 async function getRecipes() {
   'use server';
   try {
@@ -37,7 +37,7 @@ export default async function Home() {
       {recipes && (
         <div className="flex flex-row gap-2">
           {recipes.map((recipe) => (
-              <SingleRecipeCard recipe={recipe} key={recipe.id} />
+            <SingleRecipeCard recipe={recipe} key={recipe.id} />
           ))}
         </div>
       )}
