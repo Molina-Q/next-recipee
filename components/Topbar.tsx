@@ -1,7 +1,7 @@
 "use client"
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronUp, Moon, SunDim } from 'lucide-react';
 import Link from 'next/link'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const Topbar = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -15,20 +15,18 @@ const Topbar = () => {
     const handleChangeTheme = () => {
         const theme = localStorage.theme;
 
-        if(!theme && !document.documentElement.classList.contains("dark")) {
+        if (!theme && !document.documentElement.classList.contains("dark")) {
             document.documentElement.classList.toggle('dark');
             localStorage.setItem("theme", "dark");
 
-        } else if(document.documentElement.classList.contains("dark")) {
+        } else if (document.documentElement.classList.contains("dark")) {
             document.documentElement.classList.toggle('dark');
             localStorage.setItem("theme", "light")
 
-        } else if(!document.documentElement.classList.contains("dark")) {
+        } else if (!document.documentElement.classList.contains("dark")) {
             document.documentElement.classList.add('dark');
             localStorage.setItem("theme", "dark");
         }
-
-        console.log("theme = ", localStorage.theme);
     }
 
     const removeTheme = () => {
@@ -64,14 +62,14 @@ const Topbar = () => {
                 )}
             </div>
 
-            <div className='flex flex-col'>
 
-                <button onClick={handleChangeTheme}>
-                    {currentTheme || "no theme"}
-                </button>
 
-                <button onClick={removeTheme}>remove theme</button>
-            </div>
+            <button onClick={handleChangeTheme}>
+                {currentTheme === "dark" ? <SunDim /> : <Moon />}
+            </button>
+
+            {/* <button onClick={removeTheme}>remove theme</button> */}
+
         </nav>
     )
 }
