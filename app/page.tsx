@@ -1,4 +1,3 @@
-import Link from "next/link";
 import SingleRecipeCard from "./_component/SingleRecipeCard";
 import { Recipe } from "@/lib/types";
 
@@ -33,8 +32,6 @@ async function getRecipes() {
   try {
     const response = await fetch("http://localhost:3000/api/recipe", { method: 'GET' });
     const data = await response.json();
-
-    // console.log(data);
 
     if (!data.success) {
       throw new Error(data.message);
