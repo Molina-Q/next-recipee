@@ -29,6 +29,10 @@ export async function GET(
             },
         });
 
+        if (!recipe) {
+            return NextResponse.json({ success: false }, { status: 404 });
+        }
+
         return NextResponse.json({ data: recipe, success: true }, { status: 200 });
 
     } catch (error) {
