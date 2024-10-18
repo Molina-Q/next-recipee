@@ -54,7 +54,7 @@ async function DetailsRecipe(context: GetServerSidePropsContext) {
                                 <NotepadText />
                                 <h2>Instruction</h2>
                             </span>
-                            <div className='bg-slate-700 rounded-sm px-5 py-2'>
+                            <div className='bg-orange-100 dark:bg-slate-700 rounded-sm px-5 py-2'>
                                 <p>{recipe.instructions}</p>
                             </div>
                         </section>
