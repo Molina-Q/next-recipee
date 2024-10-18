@@ -1,14 +1,11 @@
 import { RecipeType } from '@/app/types/interface';
-import { CookingPot, List, NotepadText, Wheat } from 'lucide-react';
+import { List, NotepadText } from 'lucide-react';
 import { GetServerSidePropsContext, Metadata } from 'next';
-import dynamic from 'next/dynamic';
 import Image from 'next/image';
-import { notFound, useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import React from 'react'
 import Slider from '@/components/swiper/slider';
 import Tabs from './_component/Tabs';
-import Link from 'next/link';
-import { downloadPdf } from '@/app/utils/downloadPdf';
 import DownloadPdf from '@/app/_component/DownloadPdf';
 
 export const metadata: Metadata = {
@@ -18,72 +15,66 @@ export const metadata: Metadata = {
 
 async function DetailsRecipe(context: GetServerSidePropsContext) {
     let recipe: RecipeType | null = null;
-    let error: string | null = null;
+    // let error: string | null = null;
 
     try {
-        recipe = await getRecipe(context);
+        recipe = await getRecipe(context.params!.recipeId as string);
     } catch (e) {
         return notFound();
     }
 
     if (!recipe) return notFound();
-console.log("id of the recipe", recipe.id);
 
     return (
-        <>
-            {
-                <div className='flex flex-col justify-center gap-2 mb-5'>
+        <div className='flex flex-col justify-center gap-2 mb-5'>
 
-                    <h1 className='text-5xl text-center'>{recipe.title}</h1>
-                    <div className='text-center'>
-                        <DownloadPdf recipeId={recipe.id}>
-                            Download the Recipe
-                        </DownloadPdf>
+            <h1 className='text-5xl text-center'>{recipe.title}</h1>
+            <div className='text-center'>
+                <DownloadPdf recipeId={recipe.id}>
+                    Download the Recipe
+                </DownloadPdf>
+            </div>
+
+            <section className='mx-auto'>
+                <Image
+                    src={recipe.imageUrl}
+                    height={300}
+                    width={300}
+                    alt={recipe.title}
+                    className='rounded-md'
+                />
+            </section>
+
+            <section className='my-3'>
+                <span className='mb-3 text-2xl flex flex-row items-center gap-3'>
+                    <List />
+                    <h2>Steps</h2>
+                </span>
+                <Slider steps={recipe.steps} />
+            </section>
+
+            <div className='flex flex-col gap-4 md:flex-row '>
+                <section className='flex-1'>
+                    <span className='mb-3 text-2xl flex flex-row items-center gap-3'>
+                        <NotepadText />
+                        <h2>Instruction</h2>
+                    </span>
+                    <div className='bg-orange-100 dark:bg-slate-700 rounded-sm px-5 py-2'>
+                        <p>{recipe.instructions}</p>
                     </div>
+                </section>
 
-                    <section className='mx-auto'>
-                        <Image
-                            src={recipe.imageUrl}
-                            height={300}
-                            width={300}
-                            alt={recipe.title}
-                            className='rounded-md'
-                        />
-                    </section>
-
-                    <section className='my-3'>
-                        <span className='mb-3 text-2xl flex flex-row items-center gap-3'>
-                            <List />
-                            <h2>Steps</h2>
-                        </span>
-                        <Slider steps={recipe.steps} />
-                    </section>
-
-                    <div className='flex flex-col gap-4 md:flex-row '>
-                        <section className='flex-1'>
-                            <span className='mb-3 text-2xl flex flex-row items-center gap-3'>
-                                <NotepadText />
-                                <h2>Instruction</h2>
-                            </span>
-                            <div className='bg-orange-100 dark:bg-slate-700 rounded-sm px-5 py-2'>
-                                <p>{recipe.instructions}</p>
-                            </div>
-                        </section>
-
-                        <section className='flex-1'>
-                            <Tabs tabs={['Ingredients', 'Tools']} panels={recipe} />
-                        </section>
-                    </div>
-                </div>
-            }
-        </>
+                <section className='flex-1'>
+                    <Tabs tabs={['Ingredients', 'Tools']} panels={recipe} />
+                </section>
+            </div>
+        </div>
     )
 }
 
-async function getRecipe(context: GetServerSidePropsContext) {
+async function getRecipe(recipeId: string) {
     'use server';
     try {
-        const { recipeId } = context.params!;
 
         if (recipeId === undefined) return null;
 
@@ -100,7 +91,6 @@ async function getRecipe(context: GetServerSidePropsContext) {
         return data.data;
     } catch (error) {
         notFound()
-        throw new Error(`Failed to fetch recipe: ${error}`);
     }
 }
 
