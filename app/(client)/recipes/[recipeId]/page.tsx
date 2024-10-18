@@ -3,7 +3,7 @@ import { CookingPot, List, NotepadText, Wheat } from 'lucide-react';
 import { GetServerSidePropsContext, Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import React from 'react'
 import Slider from '@/components/swiper/slider';
 import Tabs from './_component/Tabs';
@@ -20,12 +20,14 @@ async function DetailsRecipe(context: GetServerSidePropsContext) {
     try {
         recipe = await getRecipe(context);
     } catch (e) {
-        error = e instanceof Error ? e.message : String(e);
+        return notFound();
     }
+
+    if (!recipe) return notFound();
 
     return (
         <>
-            {recipe && (
+            {
                 <div className='flex flex-col justify-center gap-2 mb-5'>
 
                     <h1 className='text-5xl text-center'>{recipe.title}</h1>
@@ -64,7 +66,7 @@ async function DetailsRecipe(context: GetServerSidePropsContext) {
                         </section>
                     </div>
                 </div>
-            )}
+            }
         </>
     )
 }
@@ -83,8 +85,12 @@ async function getRecipe(context: GetServerSidePropsContext) {
             throw new Error(data.message);
         }
 
+        if (!data.data) return notFound();
+        console.log("data = ", data.data);
+
         return data.data;
     } catch (error) {
+        notFound()
         throw new Error(`Failed to fetch recipe: ${error}`);
     }
 }
