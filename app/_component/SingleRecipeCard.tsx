@@ -12,7 +12,7 @@ type SingleRecipeCardProps = {
 
 const SingleRecipeCard: React.FC<SingleRecipeCardProps> = ({ recipe }) => {
     return (
-        <Card className='w-fit h-[530px] hover:bg-orange-300 hover:transition-all transition-all dark:hover:bg-slate-700'>
+        <Card className='w-fit h-fit hover:bg-orange-300 hover:transition-all transition-all dark:hover:bg-slate-700'>
 
             <CardHeader>
                 <CardTitle className='text-center mb-3'>
