@@ -42,7 +42,7 @@ const Slider: React.FC<Props> = ({ steps }) => {
                         items-center 
                         justify-center
                         text-center 
-                        bg-slate-700 
+                        bg-orange-100 dark:bg-slate-700 
                         rounded-md
                     `}
                 >
