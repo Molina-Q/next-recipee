@@ -3,7 +3,6 @@ import { useState } from "react";
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input";
-import { CldUploadWidget } from 'next-cloudinary';
 import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
@@ -20,14 +19,10 @@ export default function CategoryForm() {
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         try {
-            const response = await fetch("/api/category/create", {
+            await fetch("/api/category/create", {
                 method: "POST",
                 body: JSON.stringify(category),
             });
-
-            const data = await response.json();
-
-            console.log(data);
         } catch (error) {
             console.error("Error creating Tool:", error);
         }
