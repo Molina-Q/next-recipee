@@ -1,12 +1,12 @@
 "use client"
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 const Topbar = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    const { currentTheme } = useCurrentTheme()
+    const { currentTheme } = useCurrentTheme(localStorage.theme || "dark");
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -67,7 +67,7 @@ const Topbar = () => {
             <div className='flex flex-col'>
 
                 <button onClick={handleChangeTheme}>
-                    {currentTheme === "dark" ? 'dark' : "light"}
+                    {currentTheme || "no theme"}
                 </button>
 
                 <button onClick={removeTheme}>remove theme</button>
@@ -78,16 +78,16 @@ const Topbar = () => {
 
 export default Topbar
 
-const useCurrentTheme = () => {
+const useCurrentTheme = (theme: string) => {
     const [currentTheme, setCurrentTheme] = useState<string>();
 
     useEffect(() => {
-        if (!localStorage.theme) {
+        if (!theme) {
             setCurrentTheme('dark');
         } else {
-            setCurrentTheme(localStorage.theme);
+            setCurrentTheme(theme);
         }
-    }, [localStorage.getItem("theme")])
+    }, [theme])
 
     return { currentTheme }
 }
