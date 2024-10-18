@@ -27,9 +27,6 @@ export default function ToolForm() {
                 body: JSON.stringify(tool),
             });
 
-            const data = await response.json();
-            console.log(data);
-
         } catch (error) {
             console.error("Error creating Tool:", error);
         }
