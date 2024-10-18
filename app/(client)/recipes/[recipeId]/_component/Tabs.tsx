@@ -12,14 +12,14 @@ const Tabs: React.FC<TabsProps> = ({ tabs, panels }) => {
     const [selectedIndex, setSelectedIndex] = useState(0)
     return (
         <TabGroup selectedIndex={selectedIndex} onChange={setSelectedIndex}>
-            <TabList className="flex gap-4 bg-slate-800 rounded-t-lg">
+            <TabList className="flex gap-4 bg-orange-100 dark:bg-slate-800 rounded-t-lg">
                 {tabs.map((tab, index) => (
                     <Tab
                         key={index}
                         className={`
                         text-2xl px-2 py-1 
                         outline-none
-                        data-[selected]:bg-slate-700 
+                        data-[selected]:bg-orange-300 data-[selected]:dark:bg-slate-700 
                         ${index === 0 && "data-[selected]:rounded-tl-lg"} 
                         data-[selected]:text-white
                         `}
@@ -29,7 +29,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, panels }) => {
                 ))}
             </TabList>
 
-            <TabPanels className={"border-slate-700 border-[1px] rounded-b-lg"}>
+            <TabPanels className={"border-orange-200 dark:border-slate-700 border-[1px] rounded-b-lg"}>
                 {panels.RecipeIngredients.map((recipeIngredient) => (
                     <TabPanel key={recipeIngredient.id}>
                         <div className='my-3 py-3 flex flex-row gap-5 p-3'>
