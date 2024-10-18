@@ -60,35 +60,35 @@ export default function recipeForm() {
 
     const { ingredients, tools, categories } = useFetchData();
 
-    const formSchema = z.object({
-        title: z.string().min(1, {
-            message: "Title is required.",
-        }),
-        instructions: z.string().min(1, {
-            message: "Instructions are required.",
-        }),
-        imageUrl: z.any().optional(),
-        diff: z.number().min(1, {
-            message: "Difficulty must be at least 1.",
-        }),
-        time: z.number().min(1, {
-            message: "Time must be at least 1 minute.",
-        }),
-        vegan: z.boolean(),
-        healthy: z.boolean(),
-        steps: z.array(z.string()).min(1, {
-            message: "At least one step is required.",
-        }),
-        categoryId: z.string().min(1, {
-            message: "Category ID is required.",
-        }),
-        tools: z.array(z.string()).min(1, {
-            message: "At least one tool is required.",
-        }),
-        ingredients: z.array(z.string()).min(1, {
-            message: "At least one ingredient is required.",
-        }),
-    });
+    // const formSchema = z.object({
+    //     title: z.string().min(1, {
+    //         message: "Title is required.",
+    //     }),
+    //     instructions: z.string().min(1, {
+    //         message: "Instructions are required.",
+    //     }),
+    //     imageUrl: z.any().optional(),
+    //     diff: z.number().min(1, {
+    //         message: "Difficulty must be at least 1.",
+    //     }),
+    //     time: z.number().min(1, {
+    //         message: "Time must be at least 1 minute.",
+    //     }),
+    //     vegan: z.boolean(),
+    //     healthy: z.boolean(),
+    //     steps: z.array(z.string()).min(1, {
+    //         message: "At least one step is required.",
+    //     }),
+    //     categoryId: z.string().min(1, {
+    //         message: "Category ID is required.",
+    //     }),
+    //     tools: z.array(z.string()).min(1, {
+    //         message: "At least one tool is required.",
+    //     }),
+    //     ingredients: z.array(z.string()).min(1, {
+    //         message: "At least one ingredient is required.",
+    //     }),
+    // });
 
     function handleSuccessUpload(result: any) {
         setRecipe({
@@ -158,7 +158,7 @@ export default function recipeForm() {
     }
 
     const handleStepsInputChange = (index: number, event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const { name, value } = event.target;
+        const { value } = event.target;
         const newDetails = [...recipe.steps];
         newDetails[index] = value;
         setRecipe({ ...recipe, steps: newDetails });
@@ -179,7 +179,8 @@ export default function recipeForm() {
                 body: JSON.stringify(recipe),
             });
 
-            const data = await response.json();
+            console.log(response);
+            
 
         } catch (error) {
             console.log("error create Recipe : ", error);
