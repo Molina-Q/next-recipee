@@ -32,7 +32,7 @@ export default function RootLayout({
       >
         <Topbar />
         <main className="px-3">
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme={"system"} enableSystem>
             {children}
           </ThemeProvider>
         </main>
