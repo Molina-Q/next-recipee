@@ -7,6 +7,9 @@ import { notFound, useParams } from 'next/navigation';
 import React from 'react'
 import Slider from '@/components/swiper/slider';
 import Tabs from './_component/Tabs';
+import Link from 'next/link';
+import { downloadPdf } from '@/app/utils/downloadPdf';
+import DownloadPdf from '@/app/_component/DownloadPdf';
 
 export const metadata: Metadata = {
     title: "Recipe Details",
@@ -24,6 +27,7 @@ async function DetailsRecipe(context: GetServerSidePropsContext) {
     }
 
     if (!recipe) return notFound();
+console.log("id of the recipe", recipe.id);
 
     return (
         <>
@@ -31,6 +35,11 @@ async function DetailsRecipe(context: GetServerSidePropsContext) {
                 <div className='flex flex-col justify-center gap-2 mb-5'>
 
                     <h1 className='text-5xl text-center'>{recipe.title}</h1>
+                    <div className='text-center'>
+                        <DownloadPdf recipeId={recipe.id}>
+                            Download the Recipe
+                        </DownloadPdf>
+                    </div>
 
                     <section className='mx-auto'>
                         <Image
