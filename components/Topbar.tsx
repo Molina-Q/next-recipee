@@ -1,16 +1,42 @@
 "use client"
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const Topbar = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+    const { currentTheme } = useCurrentTheme()
+
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
+
+    const handleChangeTheme = () => {
+        const theme = localStorage.theme;
+
+        if(!theme && !document.documentElement.classList.contains("dark")) {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem("theme", "dark");
+
+        } else if(document.documentElement.classList.contains("dark")) {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem("theme", "light")
+
+        } else if(!document.documentElement.classList.contains("dark")) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem("theme", "dark");
+        }
+
+        console.log("theme = ", localStorage.theme);
+    }
+
+    const removeTheme = () => {
+        localStorage.removeItem("theme");
+    }
+
     return (
-        <nav className='flex justify-center gap-5 bg-slate-800 py-2 mb-3'>
+        <nav className='flex justify-center gap-5 bg-orange-100 dark:bg-slate-800 py-2 mb-3'>
             <Link href='/'>
                 <p>Home</p>
             </Link>
@@ -19,7 +45,7 @@ const Topbar = () => {
                 <div onClick={toggleDropdown} className='flex flex-row items-center'>
                     <p>Forms</p>
                     <div className={`transform transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`}>
-                       <ChevronUp />
+                        <ChevronUp />
                     </div>
                 </div>
 
@@ -37,8 +63,31 @@ const Topbar = () => {
                     </div>
                 )}
             </div>
+
+            <div className='flex flex-col'>
+
+                <button onClick={handleChangeTheme}>
+                    {currentTheme === "dark" ? 'dark' : "light"}
+                </button>
+
+                <button onClick={removeTheme}>remove theme</button>
+            </div>
         </nav>
     )
 }
 
 export default Topbar
+
+const useCurrentTheme = () => {
+    const [currentTheme, setCurrentTheme] = useState<string>();
+
+    useEffect(() => {
+        if (!localStorage.theme) {
+            setCurrentTheme('dark');
+        } else {
+            setCurrentTheme(localStorage.theme);
+        }
+    }, [localStorage.getItem("theme")])
+
+    return { currentTheme }
+}
