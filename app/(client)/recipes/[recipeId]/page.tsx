@@ -14,19 +14,12 @@ export const metadata: Metadata = {
 };
 
 async function DetailsRecipe(context: GetServerSidePropsContext) {
-    let recipe: RecipeType | null = null;
-    // let error: string | null = null;
-
-    try {
-        recipe = await getRecipe(context.params!.recipeId as string);
-    } catch (e) {
-        return notFound();
-    }
+    const recipe = await getRecipe(context.params!.recipeId as string);
 
     if (!recipe) return notFound();
 
     return (
-        <div className='flex flex-col justify-center gap-2 mb-5'>
+        <div className='flex flex-col justify-center gap-2 mb-5 md:px-24 lg:px-44'>
 
             <h1 className='text-5xl text-center'>{recipe.title}</h1>
             <div className='text-center'>
@@ -75,7 +68,6 @@ async function DetailsRecipe(context: GetServerSidePropsContext) {
 async function getRecipe(recipeId: string) {
     'use server';
     try {
-
         if (recipeId === undefined) return null;
 
         const response = await fetch(`http://localhost:3000/api/recipe/${recipeId}`, { method: 'GET' });
@@ -85,12 +77,11 @@ async function getRecipe(recipeId: string) {
             throw new Error(data.message);
         }
 
-        if (!data.data) return notFound();
-        console.log("data = ", data.data);
+        if (!data.data) return null;
 
-        return data.data;
+        return data.data as RecipeType;
     } catch (error) {
-        notFound()
+        return null
     }
 }
 
