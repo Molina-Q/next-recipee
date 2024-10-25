@@ -7,6 +7,7 @@ import React from 'react'
 import Slider from '@/components/swiper/slider';
 import Tabs from './_component/Tabs';
 import DownloadPdf from '@/app/_component/DownloadPdf';
+import FavoriteRecipe from './_component/FavoriteRecipe';
 
 export const metadata: Metadata = {
     title: "Recipe Details",
@@ -37,6 +38,10 @@ async function DetailsRecipe(context: GetServerSidePropsContext) {
                     className='rounded-md'
                 />
             </section>
+
+            <div>
+                <FavoriteRecipe recipeId={recipe.id} />
+            </div>
 
             <section className='my-3'>
                 <span className='mb-3 text-2xl flex flex-row items-center gap-3'>
