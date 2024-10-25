@@ -23,17 +23,64 @@ export async function downloadPdf(recipeId: string) {
     if (!recipe) return null
 
     const doc = new jsPDF();
-    let ySteps = 70;
+    let yPosition = 20;
 
-    doc.addImage(recipe.imageUrl, "jpeg", 10, 10, 40, 40);
-    doc.text(`${recipe.title} - ${String(recipe.time)} min`, 10, 60);
-    doc.text(recipe.instructions, 10, 70);
-    recipe.steps.map((step, index) => {
-        ySteps += 10;
-        return doc.text(`${index + 1}. ${step}`, 20, ySteps);
+    // Add title
+    doc.setFontSize(22);
+    doc.text(recipe.title, 10, yPosition);
+    yPosition += 10;
+
+    // Add image
+    if (recipe.imageUrl) {
+        doc.addImage(recipe.imageUrl, "JPEG", 10, yPosition, 40, 40);
+        yPosition += 50;
+    }
+
+    // Add time
+    doc.setFontSize(16);
+    doc.text(`Time: ${String(recipe.time)} min`, 10, yPosition);
+    yPosition += 10;
+
+    // Add instructions
+    doc.setFontSize(14);
+    doc.text('Instructions:', 10, yPosition);
+    yPosition += 10;
+    doc.setFontSize(12);
+    doc.text(recipe.instructions, 10, yPosition);
+    yPosition += 10;
+
+    // Add steps
+    doc.setFontSize(14);
+    doc.text('Steps:', 10, yPosition);
+    yPosition += 10;
+    doc.setFontSize(12);
+    recipe.steps.forEach((step, index) => {
+        doc.text(`${index + 1}. ${step}`, 10, yPosition);
+        yPosition += 10;
     });
-    doc.text(`Tools: ${recipe.RecipeTools.map((tool) => (tool.tool.name))}`, 10, 120);
-    doc.text(`Ingredients: ${recipe.RecipeIngredients.map((ingredient) => (`${ingredient.ingredient.name} - ${ingredient.quantity} ${ingredient.unit}`))}`, 10, 130);
 
+    // Add tools
+    yPosition += 10;
+    doc.setFontSize(14);
+    doc.text('Tools:', 10, yPosition);
+    yPosition += 10;
+    doc.setFontSize(12);
+    recipe.RecipeTools.forEach((tool) => {
+        doc.text(`- ${tool.tool.name}`, 10, yPosition);
+        yPosition += 10;
+    });
+
+    // Add ingredients
+    yPosition += 10;
+    doc.setFontSize(14);
+    doc.text('Ingredients:', 10, yPosition);
+    yPosition += 10;
+    doc.setFontSize(12);
+    recipe.RecipeIngredients.forEach((ingredient) => {
+        doc.text(`- ${ingredient.ingredient.name}: ${ingredient.quantity} ${ingredient.unit}`, 10, yPosition);
+        yPosition += 10;
+    });
+
+    // Save the PDF
     doc.save(`${recipe.title}_recipe.pdf`);
 }
