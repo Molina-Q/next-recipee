@@ -6,7 +6,16 @@ import React, { useEffect, useState } from 'react'
 const Topbar = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    const { currentTheme } = useCurrentTheme(localStorage.theme || "dark");
+    const [theme, setTheme] = useState("dark");
+
+    useEffect(() => {
+        if (typeof window !== "undefined" && localStorage) {
+            const storedTheme = localStorage.getItem("theme") || "dark";
+            setTheme(storedTheme);
+        }
+    }, []);
+
+    const { currentTheme } = useCurrentTheme(theme);
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
