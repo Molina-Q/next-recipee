@@ -5,41 +5,36 @@ import React, { useEffect, useState } from 'react'
 
 const Topbar = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-    const [theme, setTheme] = useState("dark");
-
-    useEffect(() => {
-        if (typeof window !== "undefined" && localStorage) {
-            const storedTheme = localStorage.getItem("theme") || "dark";
-            setTheme(storedTheme);
-        }
-    }, []);
-
+    const [theme, setTheme] = useState("");
     const { currentTheme } = useCurrentTheme(theme);
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
 
+    useEffect(() => {
+        if (typeof window !== "undefined" && localStorage) {
+            const storedTheme = localStorage.getItem("theme") || "dark";
+            setTheme(storedTheme);
+        }
+    }, [localStorage.getItem("theme")]);
+    
     const handleChangeTheme = () => {
         const theme = localStorage.theme;
 
         if (!theme && !document.documentElement.classList.contains("dark")) {
             document.documentElement.classList.toggle('dark');
             localStorage.setItem("theme", "dark");
-
+            setTheme("dark");
         } else if (document.documentElement.classList.contains("dark")) {
             document.documentElement.classList.toggle('dark');
-            localStorage.setItem("theme", "light")
-
+            localStorage.setItem("theme", "light");
+            setTheme("light");
         } else if (!document.documentElement.classList.contains("dark")) {
             document.documentElement.classList.add('dark');
             localStorage.setItem("theme", "dark");
+            setTheme("dark");
         }
-    }
-
-    const removeTheme = () => {
-        localStorage.removeItem("theme");
     }
 
     return (
@@ -71,14 +66,9 @@ const Topbar = () => {
                 )}
             </div>
 
-
-
             <button onClick={handleChangeTheme}>
                 {currentTheme === "dark" ? <SunDim /> : <Moon />}
             </button>
-
-            {/* <button onClick={removeTheme}>remove theme</button> */}
-
         </nav>
     )
 }
