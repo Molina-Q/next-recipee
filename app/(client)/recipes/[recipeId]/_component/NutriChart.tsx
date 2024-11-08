@@ -2,6 +2,7 @@
 import React from 'react'
 import { Doughnut } from 'react-chartjs-2'
 import { Chart, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, PointElement, LineElement } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 // Register the necessary components
 Chart.register(
@@ -13,7 +14,8 @@ Chart.register(
     Tooltip,           // For tooltips
     Legend,            // For the legend
     PointElement,      // For points in line charts
-    LineElement        // For line charts
+    LineElement,       // For line charts
+    ChartDataLabels    // For data labels
 );
 
 const NutriChart = (dataset: any) => {
@@ -40,15 +42,28 @@ const NutriChart = (dataset: any) => {
                 'rgb(255, 205, 86)',
                 'rgb(75, 192, 192)'
             ],
-            borderWidth: 0, 
-            
+            borderWidth: 0,
+
         }],
     }
 
+    const options = {
+        plugins: {
+            datalabels: {
+                display: true,
+                color: 'black',
+                formatter: (value: number, context: any) => {
+                    return `${value.toFixed(1)} ${context.chart.data.labels[context.dataIndex].split(' ')[1]}`;
+                }
+            }
+        }
+    };
+
     return (
-        <>
-            <Doughnut data={nutritionalData} />
-        </>
+        <Doughnut 
+            data={nutritionalData}
+            options={options} 
+        />
     )
 }
 
