@@ -1,13 +1,16 @@
 import { RecipeType } from '@/app/types/interface';
 import { List, NotepadText } from 'lucide-react';
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import React from 'react';
 import Slider from '@/components/swiper/slider';
 import Tabs from './_component/Tabs';
 import DownloadPdf from '@/app/_component/DownloadPdf';
 import FavoriteRecipe from './_component/FavoriteRecipe';
 import NutriChart from './_component/NutriChart';
+import { getServerSession } from 'next-auth';
+import { signIn } from 'next-auth/react';
+import { options } from '@/app/api/auth/[...nextauth]/options';
 
 export const metadata = {
     title: "Recipe Details",
@@ -19,28 +22,13 @@ export interface ResponseType {
     nutritional: any;
 }
 
-async function fetchRecipeData(recipeId: string) {
-    try {
-        if (recipeId === undefined) return null;
-
-        const response = await fetch(`http://localhost:3000/api/recipe/${recipeId}`, { method: 'GET' });
-        const data = await response.json();
-
-        if (!data.success) {
-            throw new Error(data.message);
-        }
-
-        if (!data) return null;
-
-
-        return { recipe: data.recipe, nutri: data.nutritional };
-    } catch (error) {
-        return null;
-    }
-}
-
 const DetailsRecipe = async ({ params }: { params: { recipeId: string } }) => {
     const data = await fetchRecipeData(params.recipeId);
+    const session = await getServerSession(options);
+
+    if(!session) {
+        signIn();
+    }
 
     if (!data) return notFound();
 
@@ -102,5 +90,25 @@ const DetailsRecipe = async ({ params }: { params: { recipeId: string } }) => {
         </div>
     );
 };
+
+async function fetchRecipeData(recipeId: string) {
+    try {
+        if (recipeId === undefined) return null;
+
+        const response = await fetch(`http://localhost:3000/api/recipe/${recipeId}`, { method: 'GET' });
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.message);
+        }
+
+        if (!data) return null;
+
+
+        return { recipe: data.recipe, nutri: data.nutritional };
+    } catch (error) {
+        return null;
+    }
+}
 
 export default DetailsRecipe;
