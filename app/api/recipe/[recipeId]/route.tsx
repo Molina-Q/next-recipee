@@ -5,6 +5,14 @@ type Params = {
     recipeId: string
 }
 
+interface RecipeIngredient {
+    quantity: number;
+    unit: string;
+    ingredient: {
+        name: string;
+    };
+}
+
 export async function GET(
     req: NextRequest,
     context: { params: Params }
@@ -33,15 +41,7 @@ export async function GET(
             return NextResponse.json({ success: false }, { status: 404 });
         }
 
-        const ingredients = recipe.RecipeIngredients.map(ri => `${ri.quantity} ${ri.unit} ${ri.ingredient.name}`).join('\n');
-        const recipeData = {
-            title: recipe.title,
-            ingr: ingredients.split('\n'),
-        }
-        console.log(JSON.stringify({
-            title: recipe.title,
-            ingr: ingredients.split('\n'),
-        }));
+        const ingredients = recipe.RecipeIngredients.map((ri: RecipeIngredient) => `${ri.quantity} ${ri.unit} ${ri.ingredient.name}`).join('\n');
 
         // Make a POST request to the Edamam API
         const edamamResponse = await fetch(
