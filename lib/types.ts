@@ -14,6 +14,8 @@ export interface Recipe {
     categoryId: string;
     Category: Category;
     Author: User;
+    RecipeTools: RecipeTool[];
+    RecipeIngredients: RecipeIngredient[];
 }
 
 export interface Category {
