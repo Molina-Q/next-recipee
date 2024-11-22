@@ -60,7 +60,7 @@ export interface RecipeIngredient {
     unit: string;
     createdAt: Date;
     updatedAt: Date;
-    recipes: Recipe;
+    recipe: Recipe;
     ingredient: Ingredient;
 }
 export interface RecipeTool {
@@ -69,7 +69,7 @@ export interface RecipeTool {
     toolId: string;
     createdAt: Date;
     updatedAt: Date;
-    recipes: Recipe;
+    recipe: Recipe;
     tool: Tool;
 }
 
