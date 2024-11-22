@@ -61,7 +61,7 @@ export interface RecipeIngredient {
     createdAt: Date;
     updatedAt: Date;
     recipes: Recipe;
-    ingredients: Ingredient;
+    ingredient: Ingredient;
 }
 export interface RecipeTool {
     id: string;
@@ -70,7 +70,7 @@ export interface RecipeTool {
     createdAt: Date;
     updatedAt: Date;
     recipes: Recipe;
-    tools: Tool;
+    tool: Tool;
 }
 
 export interface User {
