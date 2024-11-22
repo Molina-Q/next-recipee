@@ -1,8 +1,24 @@
-import { Recipe } from "@/lib/types";
+import { Category, RecipeIngredient, RecipeTool, User } from "@/lib/types";
 
-export interface RecipeType extends Recipe {
-    RecipeIngredients: RecipeIngredientType[];
-    RecipeTools: RecipeToolType[];
+
+export interface RecipeType {
+    id: string;
+    title: string;
+    instructions: string;
+    imageUrl: string;
+    diff: number;
+    time: number;
+    vegan: boolean;
+    healthy: boolean;
+    steps: string[];
+    createdAt: Date;
+    updatedAt: Date;
+    userId: string;
+    categoryId: string;
+    Category: Category;
+    Author: User;
+    RecipeTools: RecipeTool[];
+    RecipeIngredients: RecipeIngredient[];
 }
 
 export interface RecipeIngredientType {
