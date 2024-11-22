@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Recipe } from '@prisma/client';
+import { Recipe } from "@/lib/types";
 import Image from 'next/image';
 import React from 'react'
 import { Heart, Sprout } from 'lucide-react';
