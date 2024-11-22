@@ -17,7 +17,7 @@ const Topbar = () => {
             const storedTheme = localStorage.getItem("theme") || "dark";
             setTheme(storedTheme);
         }
-    }, [localStorage.getItem("theme")]);
+    }, [currentTheme]);
     
     const handleChangeTheme = () => {
         const theme = localStorage.theme;
