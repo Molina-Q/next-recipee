@@ -1,4 +1,4 @@
-import { Recipe } from "@prisma/client";
+import { Recipe } from "@/lib/types";
 
 export interface RecipeType extends Recipe {
     RecipeIngredients: RecipeIngredientType[];
