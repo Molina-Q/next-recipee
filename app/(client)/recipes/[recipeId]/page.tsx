@@ -9,7 +9,6 @@ import DownloadPdf from '@/app/_component/DownloadPdf';
 import FavoriteRecipe from './_component/FavoriteRecipe';
 import NutriChart from './_component/NutriChart';
 import { getServerSession } from 'next-auth';
-import { signIn } from 'next-auth/react';
 import { options } from '@/app/api/auth/[...nextauth]/options';
 
 export const metadata = {
@@ -23,13 +22,10 @@ export interface ResponseType {
 }
 
 const DetailsRecipe = async ({ params }: { params: { recipeId: string } }) => {
-    const data = await fetchRecipeData(params.recipeId);
     const session = await getServerSession(options);
+    if(!session) return redirect("/api/auth/signin");
 
-    if(!session) {
-        signIn();
-    }
-
+    const data = await fetchRecipeData(params.recipeId);
     if (!data) return notFound();
 
     const { recipe, nutri } = data;
