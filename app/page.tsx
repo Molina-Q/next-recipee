@@ -30,7 +30,7 @@ export default async function Home() {
 async function getRecipes() {
   'use server';
   try {
-    const response = await fetch("http://localhost:3000/api/recipe", { method: 'GET' });
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/recipe`, { method: 'GET' });
     const data = await response.json();
 
     if (!data.success) {

@@ -91,7 +91,7 @@ async function fetchRecipeData(recipeId: string) {
     try {
         if (recipeId === undefined) return null;
 
-        const response = await fetch(`http://localhost:3000/api/recipe/${recipeId}`, { method: 'GET' });
+        const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/recipe/${recipeId}`, { method: 'GET' });
         const data = await response.json();
 
         if (!data.success) {
