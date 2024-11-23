@@ -1,9 +1,10 @@
 "use client"
-import { z } from "zod"
 import { useEffect, useState } from "react";
 import { CldUploadWidget } from "next-cloudinary";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface RecipeForm {
     title: string;
@@ -182,7 +183,7 @@ export default function recipeForm() {
             });
 
             console.log(response);
-            
+
 
         } catch (error) {
             console.log("error create Recipe : ", error);
@@ -204,7 +205,7 @@ export default function recipeForm() {
 
             <div className="form-group">
                 <Label htmlFor="instructions" className="block text-sm font-medium ">Instructions</Label>
-                <textarea
+                <Textarea
                     id="instructions"
                     name="instructions"
                     placeholder="Step-by-step instructions..."
@@ -251,7 +252,7 @@ export default function recipeForm() {
             </div>
 
             <div className="form-group flex items-center space-x-2">
-                <Input
+                <input
                     id="vegan"
                     name="vegan"
                     type="checkbox"
@@ -262,7 +263,7 @@ export default function recipeForm() {
             </div>
 
             <div className="form-group flex items-center space-x-2">
-                <Input
+                <input
                     id="healthy"
                     name="healthy"
                     type="checkbox"
@@ -277,7 +278,7 @@ export default function recipeForm() {
                     {recipe.steps.map((step, index) => (
                         <div key={index} className="flex flex-col space-x-2">
                             <Label htmlFor="steps">Steps {index + 1}</Label>
-                            <textarea
+                            <Textarea
                                 id={'steps'}
                                 name={"steps"}
                                 value={step}
@@ -298,17 +299,18 @@ export default function recipeForm() {
 
             <div className="form-group">
                 <Label htmlFor="categoryId" className="block text-sm font-medium ">Category ID</Label>
-                <select
-                    name="categoryId"
-                    id="categoryId"
-                    onChange={handleChange}
-                    value={recipe.categoryId}
-                >
-                    <option value="">Select a category...</option>
-                    {categories && categories.map((category) => (
-                        <option key={category.id} value={category.id}>{category.name}</option>
-                    ))}
-                </select>
+                <Select onValueChange={(value) => handleChange({ target: { name: "categoryId", value } })} value={recipe.categoryId}>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select a category..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {categories && categories.map((category) => (
+                            <SelectItem key={category.id} value={category.id}>
+                                {category.name}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
 
             <div className="form-group">
@@ -352,7 +354,7 @@ export default function recipeForm() {
                             </Label>
 
                             <div>
-                                <Input
+                                <input
                                     type="number"
                                     id={ingredient.id}
                                     name="quantity"
@@ -361,7 +363,7 @@ export default function recipeForm() {
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                 />
 
-                                <Input
+                                <input
                                     type="text"
                                     id={ingredient.id}
                                     name="unit"
