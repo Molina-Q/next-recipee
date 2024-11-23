@@ -2,6 +2,8 @@
 import { z } from "zod"
 import { useEffect, useState } from "react";
 import { CldUploadWidget } from "next-cloudinary";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface RecipeForm {
     title: string;
@@ -189,8 +191,8 @@ export default function recipeForm() {
     return (
         <form onSubmit={handleSubmit} className="space-y-8 p-4">
             <div className="form-group">
-                <label htmlFor="title" className="block text-sm font-medium ">Title</label>
-                <input
+                <Label htmlFor="title" className="block text-sm font-medium ">Title</Label>
+                <Input
                     id="title"
                     name="title"
                     type="text"
@@ -201,7 +203,7 @@ export default function recipeForm() {
             </div>
 
             <div className="form-group">
-                <label htmlFor="instructions" className="block text-sm font-medium ">Instructions</label>
+                <Label htmlFor="instructions" className="block text-sm font-medium ">Instructions</Label>
                 <textarea
                     id="instructions"
                     name="instructions"
@@ -227,8 +229,8 @@ export default function recipeForm() {
             </div>
 
             <div className="form-group">
-                <label htmlFor="diff" className="block text-sm font-medium ">Difficulty /10</label>
-                <input
+                <Label htmlFor="diff" className="block text-sm font-medium ">Difficulty /10</Label>
+                <Input
                     id="diff"
                     name="diff"
                     type="number"
@@ -238,8 +240,8 @@ export default function recipeForm() {
             </div>
 
             <div className="form-group">
-                <label htmlFor="time" className="block text-sm font-medium ">Time (minutes)</label>
-                <input
+                <Label htmlFor="time" className="block text-sm font-medium ">Time (minutes)</Label>
+                <Input
                     id="time"
                     name="time"
                     type="number"
@@ -249,32 +251,32 @@ export default function recipeForm() {
             </div>
 
             <div className="form-group flex items-center space-x-2">
-                <input
+                <Input
                     id="vegan"
                     name="vegan"
                     type="checkbox"
                     onChange={handleCheckboxChange}
                     className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                 />
-                <label htmlFor="vegan" className="block text-sm font-medium ">Vegan</label>
+                <Label htmlFor="vegan" className="block text-sm font-medium ">Vegan</Label>
             </div>
 
             <div className="form-group flex items-center space-x-2">
-                <input
+                <Input
                     id="healthy"
                     name="healthy"
                     type="checkbox"
                     onChange={handleCheckboxChange}
                     className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                 />
-                <label htmlFor="healthy" className="block text-sm font-medium ">Healthy</label>
+                <Label htmlFor="healthy" className="block text-sm font-medium ">Healthy</Label>
             </div>
 
             <div className="form-group">
                 <div className="space-y-2">
                     {recipe.steps.map((step, index) => (
                         <div key={index} className="flex flex-col space-x-2">
-                            <label htmlFor="steps">Steps {index + 1}</label>
+                            <Label htmlFor="steps">Steps {index + 1}</Label>
                             <textarea
                                 id={'steps'}
                                 name={"steps"}
@@ -295,7 +297,7 @@ export default function recipeForm() {
             </div>
 
             <div className="form-group">
-                <label htmlFor="categoryId" className="block text-sm font-medium ">Category ID</label>
+                <Label htmlFor="categoryId" className="block text-sm font-medium ">Category ID</Label>
                 <select
                     name="categoryId"
                     id="categoryId"
@@ -310,11 +312,11 @@ export default function recipeForm() {
             </div>
 
             <div className="form-group">
-                <label htmlFor="tools" className="block text-sm font-medium">Tools</label>
+                <Label htmlFor="tools" className="block text-sm font-medium">Tools</Label>
                 <div className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                     {tools && tools.map((tool) => (
                         <div key={tool.name} className="flex items-center space-x-2">
-                            <input
+                            <Input
                                 type="checkbox"
                                 id={tool.id}
                                 name="tools"
@@ -322,9 +324,9 @@ export default function recipeForm() {
                                 onChange={handleTools}
                                 className="h-4 w-4 border-gray-300 rounded focus:ring-indigo-500"
                             />
-                            <label htmlFor={`tool-${tool.name}`} className="block text-sm font-medium">
+                            <Label htmlFor={`tool-${tool.name}`} className="block text-sm font-medium">
                                 {tool.name}
-                            </label>
+                            </Label>
                         </div>
                     ))}
                 </div>
@@ -332,11 +334,11 @@ export default function recipeForm() {
 
 
             <div className="form-group">
-                <label htmlFor="ingredients" className="block text-sm font-medium">Ingredients</label>
+                <Label htmlFor="ingredients" className="block text-sm font-medium">Ingredients</Label>
                 <div className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                     {ingredients && ingredients.map((ingredient) => (
                         <div key={ingredient.name} className="flex items-center space-x-2">
-                            <input
+                            <Input
                                 type="checkbox"
                                 id={ingredient.id}
                                 name="ingredients"
@@ -345,12 +347,12 @@ export default function recipeForm() {
                                 className="h-4 w-4 border-gray-300 rounded focus:ring-indigo-500"
                             />
 
-                            <label htmlFor={ingredient.name} className="block text-sm font-medium ">
+                            <Label htmlFor={ingredient.name} className="block text-sm font-medium ">
                                 {ingredient.name}
-                            </label>
+                            </Label>
 
                             <div>
-                                <input
+                                <Input
                                     type="number"
                                     id={ingredient.id}
                                     name="quantity"
@@ -359,7 +361,7 @@ export default function recipeForm() {
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                 />
 
-                                <input
+                                <Input
                                     type="text"
                                     id={ingredient.id}
                                     name="unit"
