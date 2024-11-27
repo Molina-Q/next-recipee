@@ -199,7 +199,7 @@ export default function recipeForm() {
                     type="text"
                     placeholder="Banana bread..."
                     onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    className="mt-1 block w-full rounded-md shadow-sm  sm:text-sm"
                 />
             </div>
 
@@ -210,7 +210,7 @@ export default function recipeForm() {
                     name="instructions"
                     placeholder="Step-by-step instructions..."
                     onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    className="mt-1 block w-full rounded-md shadow-sm  sm:text-sm"
                 />
             </div>
 
@@ -236,7 +236,7 @@ export default function recipeForm() {
                     name="diff"
                     type="number"
                     onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    className="mt-1 block w-full rounded-md shadow-sm  sm:text-sm"
                 />
             </div>
 
@@ -247,7 +247,7 @@ export default function recipeForm() {
                     name="time"
                     type="number"
                     onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    className="mt-1 block w-full rounded-md shadow-sm  sm:text-sm"
                 />
             </div>
 
@@ -283,7 +283,7 @@ export default function recipeForm() {
                                 name={"steps"}
                                 value={step}
                                 onChange={(event) => handleStepsInputChange(index, event)}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                className="mt-1 block w-full rounded-md shadow-sm  sm:text-sm"
                             />
                         </div>
                     ))}
@@ -315,7 +315,7 @@ export default function recipeForm() {
 
             <div className="form-group">
                 <Label htmlFor="tools" className="block text-sm font-medium">Tools</Label>
-                <div className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                <div className="mt-1 block w-full rounded-md shadow-sm  sm:text-sm">
                     {tools && tools.map((tool) => (
                         <div key={tool.name} className="flex items-center space-x-2">
                             <Input
@@ -337,41 +337,41 @@ export default function recipeForm() {
 
             <div className="form-group">
                 <Label htmlFor="ingredients" className="block text-sm font-medium">Ingredients</Label>
-                <div className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                <div className="flex flex-col gap-2 mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                     {ingredients && ingredients.map((ingredient) => (
-                        <div key={ingredient.name} className="flex items-center space-x-2">
+                        <div key={ingredient.name} className="flex items-center space-x-2 border-gray-700 border-2 rounded-md p-2">
                             <Input
                                 type="checkbox"
                                 id={ingredient.id}
                                 name="ingredients"
                                 value={ingredient.name}
                                 onChange={handleIngredients}
-                                className="h-4 w-4 border-gray-300 rounded focus:ring-indigo-500"
+                                className="size-6 border-gray-300 rounded focus:ring-indigo-500"
                             />
 
                             <Label htmlFor={ingredient.name} className="block text-sm font-medium ">
                                 {ingredient.name}
                             </Label>
 
-                            <div>
-                                <input
-                                    type="number"
-                                    id={ingredient.id}
-                                    name="quantity"
-                                    placeholder="Quantity"
-                                    onChange={handleIngredients}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                />
 
-                                <input
-                                    type="text"
-                                    id={ingredient.id}
-                                    name="unit"
-                                    placeholder="Unit"
-                                    onChange={handleIngredients}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                />
-                            </div>
+                            <Input
+                                type="number"
+                                id={ingredient.id}
+                                name="quantity"
+                                placeholder="Quantity"
+                                onChange={handleIngredients}
+                                className="mt-1 block w-full rounded-md  shadow-sm sm:text-sm"
+                            />
+
+                            <Input
+                                type="text"
+                                id={ingredient.id}
+                                name="unit"
+                                placeholder="Unit"
+                                onChange={handleIngredients}
+                                className="mt-1 block w-full rounded-md shadow-sm sm:text-sm"
+                            />
+
                         </div>
                     ))}
                 </div>
