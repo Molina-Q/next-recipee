@@ -1,27 +1,20 @@
-import { notFound } from 'next/navigation';
-import React from 'react'
+import { Tool, columns } from "./columns"
+import { DataTable } from "./data-table"
 
-interface dataTypes {
-    data?: "tool" | "ingredient" | "recipe" | "user";
+async function getData(): Promise<Tool[]> {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/tool`, { method: 'GET' });
+    const data = await response.json();
+    const dataResponse = data.data;
+
+    return dataResponse;
 }
 
-const isValid = (string: string) => {
-    const validQueries = ["tool", "ingredient", "recipe", "user"];
-    return string && validQueries.includes(string);
-}
+export default async function Dashboard() {
+    const data = await getData()
 
-const Dashboard = ({ searchParams }: { searchParams: { data?: "tool" | "ingredient" | "recipe" | "user" } }) => {
-    const data = searchParams.data;
-
-    if (!data) return notFound();
-    
     return (
-        <div>
-            <p>Page</p>
-            <p>Data: {data}</p>
-            <p>Validity: {isValid(data) ? "Valid" : "Invalid" }</p>
+        <div className="container mx-auto py-10">
+            <DataTable columns={columns} data={data} />
         </div>
     )
 }
-
-export default Dashboard
