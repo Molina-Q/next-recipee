@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { z } from "zod";
+import { toast } from "react-toastify";
 
 interface RecipeForm {
     title: string;
@@ -44,6 +46,7 @@ interface Category {
 }
 
 export default function recipeForm() {
+    const { ingredients, tools, categories } = useFetchData();
 
     const [recipe, setRecipe] = useState<RecipeForm>(
         {
@@ -61,37 +64,37 @@ export default function recipeForm() {
         }
     )
 
-    const { ingredients, tools, categories } = useFetchData();
-
-    // const formSchema = z.object({
-    //     title: z.string().min(1, {
-    //         message: "Title is required.",
-    //     }),
-    //     instructions: z.string().min(1, {
-    //         message: "Instructions are required.",
-    //     }),
-    //     imageUrl: z.any().optional(),
-    //     diff: z.number().min(1, {
-    //         message: "Difficulty must be at least 1.",
-    //     }),
-    //     time: z.number().min(1, {
-    //         message: "Time must be at least 1 minute.",
-    //     }),
-    //     vegan: z.boolean(),
-    //     healthy: z.boolean(),
-    //     steps: z.array(z.string()).min(1, {
-    //         message: "At least one step is required.",
-    //     }),
-    //     categoryId: z.string().min(1, {
-    //         message: "Category ID is required.",
-    //     }),
-    //     tools: z.array(z.string()).min(1, {
-    //         message: "At least one tool is required.",
-    //     }),
-    //     ingredients: z.array(z.string()).min(1, {
-    //         message: "At least one ingredient is required.",
-    //     }),
-    // });
+    const formSchema = z.object({
+        title: z.string().min(1, {
+            message: "Title is required.",
+        }),
+        instructions: z.string().min(1, {
+            message: "Instructions are required.",
+        }),
+        imageUrl: z.any({
+            message: "Image is required.",
+        }),
+        diff: z.number().min(1, {
+            message: "Difficulty must be at least 1.",
+        }),
+        time: z.number().min(1, {
+            message: "Time must be at least 1 minute.",
+        }),
+        steps: z.array(z.string()).min(1, {
+            message: "At least one step is required.",
+        }),
+        categoryId: z.string().min(1, {
+            message: "A Category is required.",
+        }),
+        tools: z.array(z.string()).min(1, {
+            message: "At least one tool is required.",
+        }),
+        ingredients: z.array(z.string()).min(1, {
+            message: "At least one ingredient is required.",
+        }),
+        vegan: z.boolean(),
+        healthy: z.boolean(),
+    });
 
     function handleSuccessUpload(result: any) {
         setRecipe({
@@ -171,24 +174,45 @@ export default function recipeForm() {
         setRecipe({ ...recipe, steps: [...recipe.steps, ''] });
     };
 
+    const removeStep = () => {
+        if (recipe.steps.length === 1) return;
+
+        setRecipe((prevRecipe) => {
+            const newSteps = [...prevRecipe.steps];
+            newSteps.pop();
+            return { ...prevRecipe, steps: newSteps };
+        });
+    };
+
     console.log("recipe : ", recipe);
 
-    // 2. Define a submit handler.
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         try {
+            const verifyData = formSchema.parse(recipe);
             const response = await fetch("/api/recipe/create", {
                 method: "POST",
-                body: JSON.stringify(recipe),
+                body: JSON.stringify(verifyData),
             });
-
             console.log(response);
-
-
         } catch (error) {
+
+            if (error instanceof z.ZodError) {
+                return toast.error(error.errors.map(err => err.message).join(', ') + " required", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                });
+            }
             console.log("error create Recipe : ", error);
         }
     }
+
     return (
         <form onSubmit={handleSubmit} className="space-y-8 p-4">
             <div className="form-group">
@@ -204,7 +228,10 @@ export default function recipeForm() {
             </div>
 
             <div className="form-group">
-                <Label htmlFor="instructions" className="block text-sm font-medium ">Instructions</Label>
+                <Label htmlFor="instructions" className="block text-sm font-medium">
+                    Instructions
+                </Label>
+
                 <Textarea
                     id="instructions"
                     name="instructions"
@@ -259,7 +286,9 @@ export default function recipeForm() {
                     onChange={handleCheckboxChange}
                     className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                 />
-                <Label htmlFor="vegan" className="block text-sm font-medium ">Vegan</Label>
+                <Label htmlFor="vegan" className="block text-sm font-medium">
+                    Vegan
+                </Label>
             </div>
 
             <div className="form-group flex items-center space-x-2">
@@ -288,18 +317,28 @@ export default function recipeForm() {
                         </div>
                     ))}
                 </div>
-                <button
-                    type="button"
-                    onClick={addStep}
-                    className="mt-2 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    Add Step
-                </button>
+
+                <div className="flex gap-4">
+                    <button
+                        type="button"
+                        onClick={addStep}
+                        className="mt-2 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                        Add Step
+                    </button>
+                    <button
+                        type="button"
+                        onClick={removeStep}
+                        className="mt-2 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    >
+                        Remove step
+                    </button>
+                </div>
             </div>
 
             <div className="form-group">
                 <Label htmlFor="categoryId" className="block text-sm font-medium ">Category ID</Label>
-                <Select onValueChange={(value) => handleChange({ target: { name: "categoryId", value } })} value={recipe.categoryId}>
+                <Select onValueChange={(value) => handleChange({ target: { name: "categoryId", value } } as React.ChangeEvent<HTMLInputElement>)} name="categoryId" value={recipe.categoryId}>
                     <SelectTrigger>
                         <SelectValue placeholder="Select a category..." />
                     </SelectTrigger>
@@ -337,9 +376,14 @@ export default function recipeForm() {
 
             <div className="form-group">
                 <Label htmlFor="ingredients" className="block text-sm font-medium">Ingredients</Label>
-                <div className="flex flex-col gap-2 mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                <div className="flex flex-col justify-center gap-2 mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                     {ingredients && ingredients.map((ingredient) => (
-                        <div key={ingredient.name} className="flex items-center space-x-2 border-gray-700 border-2 rounded-md p-2">
+                        <div key={ingredient.name} className="flex justify-center items-center space-x-2 border-gray-700 border-2 rounded-md p-2">
+
+                            <Label htmlFor={ingredient.id} className="block text-sm font-medium ">
+                                {ingredient.name}
+                            </Label>
+
                             <Input
                                 type="checkbox"
                                 id={ingredient.id}
@@ -348,11 +392,6 @@ export default function recipeForm() {
                                 onChange={handleIngredients}
                                 className="size-6 border-gray-300 rounded focus:ring-indigo-500"
                             />
-
-                            <Label htmlFor={ingredient.name} className="block text-sm font-medium ">
-                                {ingredient.name}
-                            </Label>
-
 
                             <Input
                                 type="number"
@@ -371,7 +410,6 @@ export default function recipeForm() {
                                 onChange={handleIngredients}
                                 className="mt-1 block w-full rounded-md shadow-sm sm:text-sm"
                             />
-
                         </div>
                     ))}
                 </div>
@@ -379,7 +417,15 @@ export default function recipeForm() {
 
             <button
                 type="submit"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="
+                    px-4 py-2 
+                    inline-flex items-center 
+                    border border-transparent rounded-md
+                    text-sm font-medium text-white
+                    shadow-sm bg-indigo-600 
+                    hover:bg-indigo-700 
+                    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
+                "
             >
                 Submit
             </button>
