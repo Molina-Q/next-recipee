@@ -41,7 +41,10 @@ export async function GET(
             return NextResponse.json({ success: false }, { status: 404 });
         }
 
-        const ingredients = recipe.RecipeIngredients.map((ri: RecipeIngredient) => `${ri.quantity} ${ri.unit} ${ri.ingredient.name}`).join('\n');
+        const ingredients = recipe.RecipeIngredients.map((ri: RecipeIngredient) => (
+            `${ri.quantity} ${ri.unit} ${ri.ingredient.name}`
+        )).join('\n');
+
 
         // Make a POST request to the Edamam API
         const edamamResponse = await fetch(
