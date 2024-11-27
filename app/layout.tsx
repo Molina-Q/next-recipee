@@ -4,7 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import Topbar from "@/components/Topbar";
 import { AuthProvider } from "./context/Providers";
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,6 +34,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-black dark:text-white`}
       >
         <AuthProvider>
+          <ToastContainer />
           <Topbar />
           <main className="px-3">
             <ThemeProvider attribute="class" defaultTheme={"system"} enableSystem>
